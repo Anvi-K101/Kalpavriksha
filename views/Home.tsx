@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { TreeOfLife } from '../components/TreeOfLife';
+import { WisdomPanel } from '../components/WisdomPanel';
 import { StorageService } from '../services/storage';
 import { useAuth } from '../services/authContext';
 import { ArrowRight, LogOut, CheckCircle2 } from 'lucide-react';
@@ -37,7 +37,7 @@ export const Home = () => {
             return acc + Object.values(val.checklist).filter(Boolean).length;
         }, 0);
 
-        setStats({
+        const currentStats = {
           count: entries.length,
           activity: entries.length > 0 ? 1 : 0,
           avgMood: entries.length ? moodSum / entries.length : 5,
@@ -45,7 +45,9 @@ export const Home = () => {
           totalStress: stressSum,
           totalClarity: claritySum,
           checklistComplete: checklistSum
-        });
+        };
+
+        setStats(currentStats);
 
         // Today's specific checklist progress
         const todayStr = new Date().toISOString().split('T')[0];
@@ -68,7 +70,7 @@ export const Home = () => {
       {user && (
          <button 
            type="button"
-           onClick={() => logout()}
+           onClick={(e) => { e.preventDefault(); logout(); }}
            className="absolute top-6 right-6 z-50 bg-white/50 backdrop-blur px-4 py-2 rounded-full flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-ink hover:bg-white transition-all shadow-sm"
          >
            <LogOut size={12} /> Sign Out
@@ -83,10 +85,10 @@ export const Home = () => {
       />
       
       {/* Content Layer */}
-      <div className="relative z-10 text-center space-y-8 p-8 max-w-lg animate-in fade-in duration-1000 slide-in-from-bottom-8">
+      <div className="relative z-10 text-center space-y-6 p-8 max-w-lg animate-in fade-in duration-1000 slide-in-from-bottom-8">
          <div>
-            <h2 className="font-sans text-xs font-bold text-organic-600 uppercase tracking-[0.3em] mb-6">Chronos 2026</h2>
-            <h1 className="font-serif text-5xl md:text-6xl text-ink font-bold tracking-tighter mb-6 leading-tight drop-shadow-sm">
+            <h2 className="font-sans text-xs font-bold text-organic-600 uppercase tracking-[0.3em] mb-4">Chronos 2026</h2>
+            <h1 className="font-serif text-5xl md:text-6xl text-ink font-bold tracking-tighter mb-4 leading-tight drop-shadow-sm">
               {stats.count === 0 ? "The Seed." : "The Tree."}
             </h1>
             <p className="font-serif text-lg md:text-xl text-gray-500 italic">
@@ -94,9 +96,12 @@ export const Home = () => {
             </p>
          </div>
         
+        {/* AI Wisdom */}
+        <WisdomPanel stats={stats} />
+
         {/* Checklist Summary */}
         {todayTotal > 0 && (
-            <div className="flex justify-center">
+            <div className="flex justify-center mt-4">
                 <Link to="/checklist" className="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-5 py-2 rounded-full border border-organic-100 shadow-sm hover:bg-white hover:scale-105 transition-all group">
                     <div className="relative">
                         <CheckCircle2 size={20} className={todayCompleted === todayTotal ? "text-organic-600" : "text-gray-400"} />
@@ -108,7 +113,7 @@ export const Home = () => {
             </div>
         )}
 
-         <div className="pt-8">
+         <div className="pt-6">
            <Link to="/log/state" className="group inline-flex items-center gap-3 px-8 py-4 bg-ink text-paper rounded-full font-sans font-bold uppercase tracking-widest text-xs hover:bg-organic-800 transition-all shadow-xl hover:shadow-2xl hover:scale-105">
              Update Record <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
            </Link>

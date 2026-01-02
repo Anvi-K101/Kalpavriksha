@@ -1,15 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { DailyEntry, ChecklistItemConfig } from '../types';
 import { StorageService } from '../services/storage';
 import { useAuth } from '../services/authContext';
 import { PageContainer, SectionHeader, Card, SaveIndicator, CheckItem } from '../components/ui/Controls';
-import { Settings, Bell, Plus, Trash2, X, Check } from 'lucide-react';
+import { Settings, Plus, Trash2, Check } from 'lucide-react';
 import { EMPTY_ENTRY } from '../constants';
 
 export const ChecklistPage = () => {
   const { user, loading: authLoading } = useAuth();
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date] = useState(new Date().toISOString().split('T')[0]);
   const [entry, setEntry] = useState<DailyEntry>({ ...EMPTY_ENTRY, id: date });
   const [config, setConfig] = useState<ChecklistItemConfig[]>([]);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle');
@@ -22,12 +21,10 @@ export const ChecklistPage = () => {
 
     let mounted = true;
     
-    // Load config from Firestore/Local
     StorageService.getChecklistConfig(user?.uid).then(cfg => {
       if (mounted) setConfig(cfg);
     });
 
-    // Load today's entry
     StorageService.getEntry(date, user?.uid).then(data => {
       if (mounted) setEntry(data);
     }).catch((err) => {
@@ -66,7 +63,8 @@ export const ChecklistPage = () => {
       });
   };
 
-  const addItem = () => {
+  const addItem = (e: React.MouseEvent) => {
+      e.preventDefault();
       const newItem: ChecklistItemConfig = {
           id: Date.now().toString(),
           label: 'New Habit',
@@ -75,7 +73,8 @@ export const ChecklistPage = () => {
       saveConfig([...config, newItem]);
   };
 
-  const removeItem = (id: string) => {
+  const removeItem = (id: string, e: React.MouseEvent) => {
+      e.preventDefault();
       saveConfig(config.filter(c => c.id !== id));
   };
 
@@ -83,7 +82,8 @@ export const ChecklistPage = () => {
       saveConfig(config.map(c => c.id === id ? { ...c, label } : c));
   };
 
-  const requestNotificationPermission = () => {
+  const requestNotificationPermission = (e: React.MouseEvent) => {
+      e.preventDefault();
       if (!('Notification' in window)) return;
       Notification.requestPermission().then(permission => {
           setNotificationsEnabled(permission === 'granted');
@@ -98,7 +98,7 @@ export const ChecklistPage = () => {
           <SectionHeader title="Habit Rituals" subtitle={new Date(date).toLocaleDateString()} />
           <button 
              type="button"
-             onClick={() => setIsEditing(!isEditing)}
+             onClick={(e) => { e.preventDefault(); setIsEditing(!isEditing); }}
              className={`p-3 rounded-full transition-all ${isEditing ? 'bg-organic-600 text-white shadow-lg' : 'bg-white text-gray-400 hover:text-ink shadow-sm'}`}
           >
               {isEditing ? <Check size={20} /> : <Settings size={20} />}
@@ -116,7 +116,7 @@ export const ChecklistPage = () => {
                                 onChange={(e) => updateItemLabel(item.id, e.target.value)}
                                 className="flex-grow p-2 bg-stone-50 border-b border-gray-200 font-serif text-ink focus:outline-none focus:border-organic-500"
                             />
-                            <button type="button" onClick={() => removeItem(item.id)} className="text-red-400 hover:text-red-600 p-2">
+                            <button type="button" onClick={(e) => removeItem(item.id, e)} className="text-red-400 hover:text-red-600 p-2">
                                 <Trash2 size={18} />
                             </button>
                         </div>

@@ -18,14 +18,14 @@ const DateNavigator = ({ date, setDate }: { date: string, setDate: (d: string) =
   };
   return (
     <div className="flex items-center justify-between bg-white rounded-xl p-2 mb-6 shadow-sm border border-gray-100">
-       <button type="button" onClick={() => changeDate(-1)} className="p-2 hover:bg-stone-50 rounded-lg text-gray-400"><ChevronLeft size={20} /></button>
+       <button type="button" onClick={(e) => { e.preventDefault(); changeDate(-1); }} className="p-2 hover:bg-stone-50 rounded-lg text-gray-400"><ChevronLeft size={20} /></button>
        <div className="flex items-center gap-2">
           <Calendar size={14} className="text-organic-600" />
           <span className="font-serif font-bold text-ink text-sm">
              {new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' })}
           </span>
        </div>
-       <button type="button" onClick={() => changeDate(1)} className="p-2 hover:bg-stone-50 rounded-lg text-gray-400"><ChevronRight size={20} /></button>
+       <button type="button" onClick={(e) => { e.preventDefault(); changeDate(1); }} className="p-2 hover:bg-stone-50 rounded-lg text-gray-400"><ChevronRight size={20} /></button>
     </div>
   );
 };
@@ -81,7 +81,7 @@ const useDailyEntry = (dateStr: string) => {
           setTimeout(() => setSaveStatus('idle'), 2000);
         })
         .catch(() => {
-          setSaveStatus('idle'); // Local backup is always written by service
+          setSaveStatus('idle');
         });
         
       return next;
@@ -118,13 +118,16 @@ const StateContent = ({ entry, save }: { entry: DailyEntry, save: any }) => (
                 <button
                   key={emo}
                   type="button"
-                  onClick={() => save((p: DailyEntry) => ({
-                    ...p, 
-                    state: {
-                      ...p.state, 
-                      descriptors: isActive ? p.state.descriptors.filter(d => d !== emo) : [...p.state.descriptors, emo]
-                    }
-                  }))}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    save((p: DailyEntry) => ({
+                      ...p, 
+                      state: {
+                        ...p.state, 
+                        descriptors: isActive ? p.state.descriptors.filter(d => d !== emo) : [...p.state.descriptors, emo]
+                      }
+                    }));
+                  }}
                   className={`px-4 py-2 rounded-full text-sm font-sans font-medium transition-all ${isActive ? 'bg-organic-600 text-white shadow-sm' : 'bg-gray-50 text-gray-600'}`}
                 >
                   {emo}

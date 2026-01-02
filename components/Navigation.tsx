@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Activity, Clock, Trophy, Feather, Camera, Sun, 
-  Disc, BarChart2, X, Menu, ListChecks, UserCircle 
+  Disc, BarChart2, X, ListChecks, UserCircle 
 } from 'lucide-react';
 
 const CATEGORIES = [
@@ -19,22 +19,18 @@ export const BottomNav = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
-  // Close menu when route changes
   useEffect(() => {
     setIsOpen(false);
   }, [location]);
 
   return (
     <>
-      {/* Dimmed Background Overlay */}
       <div 
         className={`fixed inset-0 bg-paper/80 backdrop-blur-sm z-40 transition-opacity duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setIsOpen(false)}
       />
 
       <div className="fixed bottom-8 left-0 right-0 z-50 flex flex-col items-center justify-end pointer-events-none">
-        
-        {/* Expanded Menu */}
         <nav 
           className={`
             mb-6 bg-ink text-paper rounded-3xl shadow-float p-5
@@ -43,7 +39,6 @@ export const BottomNav = () => {
             ${isOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-75 opacity-0 translate-y-12 pointer-events-none'}
           `}
         >
-          {/* Main Rows */}
           <div className="flex justify-around items-center border-b border-white/10 pb-5">
              <NavLink to="/" className="flex flex-col items-center gap-1 group">
                 <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
@@ -82,10 +77,9 @@ export const BottomNav = () => {
           </div>
         </nav>
 
-        {/* The Trigger Button */}
         <button 
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={(e) => { e.preventDefault(); setIsOpen(!isOpen); }}
           className={`
             pointer-events-auto w-16 h-16 rounded-full shadow-2xl flex items-center justify-center
             transition-all duration-300 z-50

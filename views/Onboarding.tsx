@@ -55,7 +55,7 @@ export const Onboarding = () => {
         <div className="space-y-6 w-full max-w-xs">
           <button 
             type="button"
-            onClick={() => setView('auth')}
+            onClick={(e) => { e.preventDefault(); setView('auth'); }}
             className="w-full py-4 bg-ink text-paper rounded-full font-sans font-bold uppercase tracking-widest text-xs hover:bg-organic-800 transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-3"
           >
             Access Vault <ArrowRight size={14} />
@@ -77,7 +77,7 @@ export const Onboarding = () => {
 
         <button 
           type="button"
-          onClick={() => signInGoogle()}
+          onClick={(e) => { e.preventDefault(); signInGoogle(); }}
           className="w-full py-4 bg-white border border-stone-200 text-ink rounded-2xl font-sans font-bold uppercase tracking-widest text-xs hover:bg-stone-50 transition-all flex items-center justify-center gap-3 mb-6 shadow-sm"
         >
           <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="Google" />
@@ -124,7 +124,7 @@ export const Onboarding = () => {
           {authMode === 'signup' ? 'Have a vault?' : 'Need a vault?'} 
           <button 
             type="button"
-            onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
+            onClick={(e) => { e.preventDefault(); setAuthMode(authMode === 'login' ? 'signup' : 'login'); }}
             className="ml-2 text-ink hover:text-organic-600 underline"
           >
             {authMode === 'login' ? 'Register' : 'Login'}
@@ -133,7 +133,7 @@ export const Onboarding = () => {
 
         <button 
           type="button"
-          onClick={() => setView('welcome')}
+          onClick={(e) => { e.preventDefault(); setView('welcome'); }}
           className="w-full mt-12 text-gray-300 hover:text-gray-500 text-xs font-bold uppercase tracking-widest transition-colors"
         >
           Cancel

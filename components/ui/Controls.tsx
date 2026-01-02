@@ -31,8 +31,6 @@ export const Card: React.FC<{
   </div>
 );
 
-// --- NEW REPLACEMENTS FOR SLIDERS ---
-
 export const RatingScale: React.FC<{ 
   value: number | null; 
   onChange: (val: number) => void; 
@@ -62,7 +60,7 @@ export const RatingScale: React.FC<{
               type="button"
               onMouseEnter={() => setHovered(num)}
               onMouseLeave={() => setHovered(null)}
-              onClick={() => onChange(num)}
+              onClick={(e) => { e.preventDefault(); onChange(num); }}
               className={`
                 h-12 rounded-xl font-mono font-bold transition-all duration-150 border-2
                 ${isActive 
@@ -106,7 +104,7 @@ export const MoodLevelSelector: React.FC<{ value: number | null, onChange: (val:
           <button
             key={level.label}
             type="button"
-            onClick={() => onChange(level.val)}
+            onClick={(e) => { e.preventDefault(); onChange(level.val); }}
             className={`
               flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all
               ${isSelected 
@@ -123,8 +121,6 @@ export const MoodLevelSelector: React.FC<{ value: number | null, onChange: (val:
     </div>
   );
 };
-
-// --- END NEW COMPONENTS ---
 
 export const Counter: React.FC<{ value: number; onChange: (val: number) => void; label: string }> = ({ value, onChange, label }) => (
   <div className="flex items-center justify-between py-3 border-b border-dashed border-organic-100 last:border-0">
@@ -151,7 +147,7 @@ export const TextInput: React.FC<{ label?: string; value: string; onChange: (val
 );
 
 export const CheckItem: React.FC<{ label: string; checked: boolean; onToggle: () => void }> = ({ label, checked, onToggle }) => (
-  <button type="button" onClick={onToggle} className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left ${checked ? 'bg-organic-50 border-organic-200' : 'bg-white border-gray-100 hover:bg-stone-50'}`}>
+  <button type="button" onClick={(e) => { e.preventDefault(); onToggle(); }} className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left ${checked ? 'bg-organic-50 border-organic-200' : 'bg-white border-gray-100 hover:bg-stone-50'}`}>
     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${checked ? 'bg-organic-600 border-organic-600' : 'border-gray-300'}`}>
       {checked && <Check size={14} strokeWidth={4} className="text-white" />}
     </div>
