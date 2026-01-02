@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { TreeOfLife } from '../components/TreeOfLife';
@@ -7,7 +6,7 @@ import { useAuth } from '../services/authContext';
 import { ArrowRight, LogOut, CheckCircle2 } from 'lucide-react';
 
 export const Home = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
   const [stats, setStats] = useState({ 
       count: 0, 
       activity: 0, 
@@ -17,45 +16,49 @@ export const Home = () => {
       totalClarity: 0,
       checklistComplete: 0
   });
-
-  useEffect(() => {
-    const data = StorageService.loadLocal();
-    const entries = Object.values(data.entries);
-    
-    const moodSum = entries.reduce((acc, val) => acc + (val.state?.mood || 5), 0);
-    const creativeSum = entries.reduce((acc, val) => acc + (val.effort?.creativeHours || 0), 0);
-    const stressSum = entries.reduce((acc, val) => acc + (val.state?.stress || 0), 0);
-    const claritySum = entries.reduce((acc, val) => acc + (val.state?.mentalClarity || 0), 0);
-    
-    const checklistSum = entries.reduce((acc, val) => {
-        if (!val.checklist) return acc;
-        return acc + Object.values(val.checklist).filter(Boolean).length;
-    }, 0);
-
-    setStats({
-      count: entries.length,
-      activity: entries.length > 0 ? 1 : 0,
-      avgMood: entries.length ? moodSum / entries.length : 5,
-      totalCreative: creativeSum,
-      totalStress: stressSum,
-      totalClarity: claritySum,
-      checklistComplete: checklistSum
-    });
-  }, [user]);
-
   const [todayCompleted, setTodayCompleted] = useState(0);
   const [todayTotal, setTodayTotal] = useState(0);
 
   useEffect(() => {
-     const todayStr = new Date().toISOString().split('T')[0];
-     StorageService.getEntry(todayStr, user?.uid).then(entry => {
-         if (entry && entry.checklist) {
-             setTodayCompleted(Object.values(entry.checklist).filter(Boolean).length);
-         }
-     });
-     const config = StorageService.getChecklistConfig();
-     setTodayTotal(config.filter(c => c.enabled).length);
-  }, [user]);
+    if (authLoading) return;
+
+    const refreshData = async () => {
+        const data = StorageService.loadLocal();
+        const entries = Object.values(data.entries);
+        
+        const moodSum = entries.reduce((acc, val) => acc + (val.state?.mood || 5), 0);
+        const creativeSum = entries.reduce((acc, val) => acc + (val.effort?.creativeHours || 0), 0);
+        const stressSum = entries.reduce((acc, val) => acc + (val.state?.stress || 0), 0);
+        const claritySum = entries.reduce((acc, val) => acc + (val.state?.mentalClarity || 0), 0);
+        
+        const checklistSum = entries.reduce((acc, val) => {
+            if (!val.checklist) return acc;
+            return acc + Object.values(val.checklist).filter(Boolean).length;
+        }, 0);
+
+        setStats({
+          count: entries.length,
+          activity: entries.length > 0 ? 1 : 0,
+          avgMood: entries.length ? moodSum / entries.length : 5,
+          totalCreative: creativeSum,
+          totalStress: stressSum,
+          totalClarity: claritySum,
+          checklistComplete: checklistSum
+        });
+
+        // Today's specific checklist progress
+        const todayStr = new Date().toISOString().split('T')[0];
+        const todayEntry = await StorageService.getEntry(todayStr, user?.uid);
+        if (todayEntry && todayEntry.checklist) {
+            setTodayCompleted(Object.values(todayEntry.checklist).filter(Boolean).length);
+        }
+        
+        const config = await StorageService.getChecklistConfig(user?.uid);
+        setTodayTotal(config.filter(c => c.enabled).length);
+    };
+
+    refreshData();
+  }, [user, authLoading]);
 
   return (
     <div className="relative h-screen w-full bg-paper overflow-hidden flex flex-col items-center justify-center">

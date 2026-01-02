@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DailyEntry, ChecklistItemConfig } from '../types';
 import { StorageService } from '../services/storage';
@@ -8,7 +7,7 @@ import { Settings, Bell, Plus, Trash2, X, Check } from 'lucide-react';
 import { EMPTY_ENTRY } from '../constants';
 
 export const ChecklistPage = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [entry, setEntry] = useState<DailyEntry>({ ...EMPTY_ENTRY, id: date });
   const [config, setConfig] = useState<ChecklistItemConfig[]>([]);
@@ -18,17 +17,24 @@ export const ChecklistPage = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState('Notification' in window && Notification.permission === 'granted');
 
   useEffect(() => {
-    setConfig(StorageService.getChecklistConfig());
-    
+    if (authLoading) return;
+
     let mounted = true;
+    
+    // Load config from Firestore/Local
+    StorageService.getChecklistConfig(user?.uid).then(cfg => {
+      if (mounted) setConfig(cfg);
+    });
+
+    // Load today's entry
     StorageService.getEntry(date, user?.uid).then(data => {
       if (mounted) setEntry(data);
-    }).catch(() => {
-      console.warn("Chronos: Checklist hydration bypassed.");
+    }).catch((err) => {
+      console.warn("Chronos: Checklist entry fetch failed", err);
     });
 
     return () => { mounted = false; };
-  }, [date, user]);
+  }, [date, user, authLoading]);
 
   const toggleTask = (id: string) => {
     const currentVal = entry.checklist[id] || false;
@@ -52,7 +58,11 @@ export const ChecklistPage = () => {
 
   const saveConfig = (newConfig: ChecklistItemConfig[]) => {
       setConfig(newConfig);
-      StorageService.saveChecklistConfig(newConfig);
+      setSaveStatus('saving');
+      StorageService.saveChecklistConfig(newConfig, user?.uid).then(() => {
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus('idle'), 1500);
+      });
   };
 
   const addItem = () => {

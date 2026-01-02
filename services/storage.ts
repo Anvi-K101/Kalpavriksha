@@ -13,19 +13,19 @@ const DEFAULT_CHECKLIST: ChecklistItemConfig[] = [
 ];
 
 export const StorageService = {
+  // --- Local Source of Truth (Always Immediate) ---
   loadLocal: (): AppData => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        return { entries: {}, principles: [], essays: [], checklistConfig: DEFAULT_CHECKLIST };
-      }
+      if (!raw) return { entries: {}, principles: [], essays: [], checklistConfig: DEFAULT_CHECKLIST };
       const data = JSON.parse(raw);
-      if (!data.checklistConfig) {
-        data.checklistConfig = DEFAULT_CHECKLIST;
-      }
-      return data;
+      return { 
+        entries: data.entries || {},
+        principles: data.principles || [],
+        essays: data.essays || [],
+        checklistConfig: data.checklistConfig || DEFAULT_CHECKLIST
+      };
     } catch (e) {
-      console.error("Chronos: Local load failed", e);
       return { entries: {}, principles: [], essays: [], checklistConfig: DEFAULT_CHECKLIST };
     }
   },
@@ -34,84 +34,105 @@ export const StorageService = {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (e) {
-      console.error("Chronos: Local save failed", e);
+      console.error("Chronos: Local cache write failed", e);
     }
   },
 
-  getChecklistConfig: (): ChecklistItemConfig[] => {
-    const data = StorageService.loadLocal();
-    return data.checklistConfig || DEFAULT_CHECKLIST;
-  },
+  // --- Configuration Management ---
+  getChecklistConfig: async (userId?: string): Promise<ChecklistItemConfig[]> => {
+    const local = StorageService.loadLocal();
+    const uid = userId || auth.currentUser?.uid;
+    if (!uid || !db) return local.checklistConfig;
 
-  saveChecklistConfig: (config: ChecklistItemConfig[]) => {
-    const data = StorageService.loadLocal();
-    data.checklistConfig = config;
-    StorageService.saveLocal(data);
-  },
-
-  getEntry: async (dateStr: string, userId?: string): Promise<DailyEntry> => {
-    const currentUid = auth.currentUser?.uid || userId;
-    const localData = StorageService.loadLocal();
-    const fallback = localData.entries[dateStr] || { ...EMPTY_ENTRY, id: dateStr };
-
-    if (currentUid && db) {
-      try {
-        const docRef = doc(db, 'users', currentUid, 'entries', dateStr);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          const remoteData = docSnap.data() as DailyEntry;
-          const cleanedEntry = {
-            ...EMPTY_ENTRY,
-            ...remoteData,
-            id: dateStr,
-            checklist: remoteData.checklist || {},
-            state: { ...EMPTY_ENTRY.state, ...remoteData.state },
-            effort: { ...EMPTY_ENTRY.effort, ...remoteData.effort },
-          };
-          
-          localData.entries[dateStr] = cleanedEntry;
-          StorageService.saveLocal(localData);
-          return cleanedEntry;
-        }
-      } catch (e: any) {
-        console.warn("Chronos: Cloud fetch bypassed/failed. Using vault cache.", e.message);
+    try {
+      const snap = await getDoc(doc(db, 'users', uid, 'config', 'checklist'));
+      if (snap.exists()) {
+        const remote = snap.data().items as ChecklistItemConfig[];
+        local.checklistConfig = remote;
+        StorageService.saveLocal(local);
+        return remote;
       }
+    } catch (e) {
+      // Background failure does not affect local configuration
     }
-
-    return fallback;
+    return local.checklistConfig;
   },
 
-  saveEntry: async (entry: DailyEntry, userId?: string) => {
-    const currentUid = auth.currentUser?.uid || userId;
+  saveChecklistConfig: async (config: ChecklistItemConfig[], userId?: string) => {
+    const local = StorageService.loadLocal();
+    local.checklistConfig = config;
+    StorageService.saveLocal(local);
 
-    const data = StorageService.loadLocal();
-    data.entries[entry.id] = entry;
-    StorageService.saveLocal(data);
-
-    if (currentUid && db) {
+    const uid = userId || auth.currentUser?.uid;
+    if (uid && db) {
       try {
-        const docRef = doc(db, 'users', currentUid, 'entries', entry.id);
-        // Ensure document strictly matches rule requirements
-        await setDoc(docRef, { 
-          ...entry, 
-          userId: currentUid, 
-          date: entry.id, // Explicitly match field requirements if any
-          timestamp: Date.now() 
+        await setDoc(doc(db, 'users', uid, 'config', 'checklist'), { 
+          items: config, 
+          updatedAt: Date.now() 
         }, { merge: true });
-      } catch (e: any) {
-        console.error("Chronos: Cloud save error", e.message);
+      } catch (e) {
+        // Silent background fail
       }
     }
   },
-  
+
+  // --- Daily Entry Logic ---
+  getEntry: async (dateStr: string, userId?: string): Promise<DailyEntry> => {
+    const local = StorageService.loadLocal();
+    const cached = local.entries[dateStr] || { ...EMPTY_ENTRY, id: dateStr };
+    const uid = userId || auth.currentUser?.uid;
+
+    if (!uid || !db) return cached;
+
+    try {
+      const snap = await getDoc(doc(db, 'users', uid, 'entries', dateStr));
+      if (snap.exists()) {
+        const remote = snap.data() as DailyEntry;
+        const merged: DailyEntry = {
+          ...EMPTY_ENTRY,
+          ...remote,
+          id: dateStr,
+          state: { ...EMPTY_ENTRY.state, ...remote.state },
+          effort: { ...EMPTY_ENTRY.effort, ...remote.effort },
+          checklist: remote.checklist || {},
+        };
+        // Background update local cache with cloud truth
+        local.entries[dateStr] = merged;
+        StorageService.saveLocal(local);
+        return merged;
+      }
+    } catch (e) {
+      // Cloud unreachable - local remains master
+    }
+    return cached;
+  },
+
+  saveEntry: async (entry: DailyEntry, userId?: string): Promise<void> => {
+    // 1. Mandatory Local Save (Guarantees persistence even if user closes tab immediately)
+    const local = StorageService.loadLocal();
+    local.entries[entry.id] = entry;
+    StorageService.saveLocal(local);
+
+    const uid = userId || auth.currentUser?.uid;
+    if (uid && db) {
+      // 2. Background Cloud Sync (Async, returns promise for UI tracking)
+      return setDoc(doc(db, 'users', uid, 'entries', entry.id), { 
+        ...entry, 
+        userId: uid, 
+        updatedAt: Date.now() 
+      }, { merge: true });
+    }
+    // If no user, we consider the local save a complete "local success"
+    return Promise.resolve();
+  },
+
   exportData: () => {
      const data = StorageService.loadLocal();
      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
      const url = URL.createObjectURL(blob);
      const a = document.createElement('a');
      a.href = url;
-     a.download = `chronos_archive_2026_${new Date().toISOString().split('T')[0]}.json`;
+     a.download = `chronos_vault_${new Date().toISOString().split('T')[0]}.json`;
      a.click();
   }
 };

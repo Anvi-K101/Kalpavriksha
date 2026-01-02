@@ -2,7 +2,8 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { DailyEntry } from '../types';
 import { COMMON_EMOTIONS, MOOD_LABELS, EMPTY_ENTRY } from '../constants';
 import { StorageService } from '../services/storage';
-import { Tile, MoodPicker, Stepper, ChipGroup, MinimalInput, SaveIndicator } from '../components/ui/Controls';
+// Fix: Changed 'Tile' to 'Card' as 'Tile' is not exported from Controls
+import { Card, MoodPicker, Stepper, ChipGroup, MinimalInput, SaveIndicator } from '../components/ui/Controls';
 import { Sun, Moon, Coffee, Book, Heart, Feather, Briefcase, Zap, ArrowRight, X } from 'lucide-react';
 import { useAuth } from '../services/authContext';
 
@@ -87,7 +88,8 @@ export const DailyLogger: React.FC<DailyLoggerProps> = ({ date }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4">
 
         {/* 1. MOOD & ESSENCE (Full Width on Mobile, 6 cols on Desktop) */}
-        <Tile className="col-span-1 lg:col-span-6 flex flex-col justify-center min-h-[160px]">
+        {/* Fix: Changed 'Tile' to 'Card' */}
+        <Card className="col-span-1 lg:col-span-6 flex flex-col justify-center min-h-[160px]">
           <h3 className="font-serif text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Essence</h3>
           <MoodPicker 
             value={entry.state.mood} 
@@ -101,10 +103,11 @@ export const DailyLogger: React.FC<DailyLoggerProps> = ({ date }) => {
               className="text-sm border-b border-gray-100 pb-1"
             />
           </div>
-        </Tile>
+        </Card>
 
         {/* 2. VITALITY (Sleep & Body) */}
-        <Tile title="Vitality" className="col-span-1 lg:col-span-6 bg-stone-50/50">
+        {/* Fix: Changed 'Tile' to 'Card' */}
+        <Card title="Vitality" className="col-span-1 lg:col-span-6 bg-stone-50/50">
           <div className="flex items-center justify-between mb-6">
              <div className="flex items-center gap-3">
                <div className="p-2 bg-white rounded-full shadow-sm text-organic-600"><Icons.Evening size={18} /></div>
@@ -135,10 +138,11 @@ export const DailyLogger: React.FC<DailyLoggerProps> = ({ date }) => {
                 single
              />
           </div>
-        </Tile>
+        </Card>
 
         {/* 3. FOCUS (Work & Flow) */}
-        <Tile title="Output" className="col-span-1 lg:col-span-4">
+        {/* Fix: Changed 'Tile' to 'Card' */}
+        <Card title="Output" className="col-span-1 lg:col-span-4">
            <div className="space-y-6">
               <div className="flex justify-between items-center">
                  <span className="font-serif text-ink">Deep Work</span>
@@ -149,10 +153,11 @@ export const DailyLogger: React.FC<DailyLoggerProps> = ({ date }) => {
                  <Stepper value={entry.effort.creativeHours} onChange={(v) => updateEffort('creativeHours', v)} step={0.5} unit="h" />
               </div>
            </div>
-        </Tile>
+        </Card>
 
         {/* 4. QUICK CAPTURE (Journal) */}
-        <Tile className="col-span-1 lg:col-span-8 bg-organic-50/30 border-organic-100">
+        {/* Fix: Changed 'Tile' to 'Card' */}
+        <Card className="col-span-1 lg:col-span-8 bg-organic-50/30 border-organic-100">
            <div className="h-full flex flex-col">
              <h3 className="font-serif text-sm font-bold text-organic-700 uppercase tracking-widest mb-3 flex items-center gap-2">
                <Feather size={14} /> Quick Chronicle
@@ -178,10 +183,11 @@ export const DailyLogger: React.FC<DailyLoggerProps> = ({ date }) => {
                Open Full Journal <ArrowRight size={10} className="inline ml-1"/>
              </button>
            </div>
-        </Tile>
+        </Card>
 
         {/* 5. MIND (Stress & Clarity) - Compact */}
-        <Tile className="col-span-1 lg:col-span-6 flex flex-col justify-between">
+        {/* Fix: Changed 'Tile' to 'Card' */}
+        <Card className="col-span-1 lg:col-span-6 flex flex-col justify-between">
            <div className="mb-4">
               <div className="flex justify-between text-sm font-serif mb-2 text-gray-500">
                 <span>Anxiety</span>
@@ -219,10 +225,11 @@ export const DailyLogger: React.FC<DailyLoggerProps> = ({ date }) => {
                 className="w-full h-6 -mt-4 opacity-0 cursor-pointer relative z-10"
               />
            </div>
-        </Tile>
+        </Card>
 
         {/* 6. MEMORY & PEOPLE */}
-        <Tile className="col-span-1 lg:col-span-6 bg-white">
+        {/* Fix: Changed 'Tile' to 'Card' */}
+        <Card className="col-span-1 lg:col-span-6 bg-white">
            <h3 className="font-serif text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">Connections</h3>
            <MinimalInput 
               value={entry.memory.peopleMet}
@@ -239,7 +246,7 @@ export const DailyLogger: React.FC<DailyLoggerProps> = ({ date }) => {
               multiline
               className="text-base text-gray-700"
            />
-        </Tile>
+        </Card>
 
       </div>
 
