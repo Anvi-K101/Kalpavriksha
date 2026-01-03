@@ -215,6 +215,6 @@ const FutureContent = ({ entry, save }: { entry: DailyEntry, save: any }) => (
 export const StatePage = () => <PageWrapper Component={StateContent} title="Vital Signs" subtitle="Daily State" />;
 export const EffortPage = () => <PageWrapper Component={EffortContent} title="Energy Allocation" subtitle="Effort & Recovery" />;
 export const AchievementsPage = () => <PageWrapper Component={AchievementsContent} title="Daily Progress" subtitle="Wins & Lessons" />;
-export const ReflectionsPage = () => <PageWrapper Component={ReflectionsContent} title="Introspection" subtitle="Daily Reflections" />;
+export const ReflectionsPage = () => <PageWrapper Component={ReflectionsContent} title="Introspection." subtitle="Daily Reflections" />;
 export const MemoriesPage = () => <PageWrapper Component={MemoriesContent} title="Archive" subtitle="Preserving Moments" />;
 export const FuturePage = () => <PageWrapper Component={FutureContent} title="Orientation" subtitle="Gratitude & Future" />;
