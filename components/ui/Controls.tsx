@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Minus, Check, Cloud, RefreshCw, AlertCircle } from 'lucide-react';
+import { Plus, Minus, Check, Cloud, RefreshCw, AlertCircle, Loader2 } from 'lucide-react';
 
 export const PageContainer: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
   <div className={`min-h-screen pb-32 pt-24 px-6 md:px-12 max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 ${className}`}>
@@ -12,6 +12,13 @@ export const SectionHeader: React.FC<{ title: string; subtitle?: string }> = ({ 
   <div className="mb-10">
     <h1 className="font-serif text-3xl md:text-4xl text-ink font-bold mb-2 tracking-tight">{title}</h1>
     {subtitle && <p className="font-sans text-sm font-bold text-organic-400 uppercase tracking-widest">{subtitle}</p>}
+  </div>
+);
+
+export const LoadingSpinner: React.FC<{ message?: string }> = ({ message = "Accessing Vault..." }) => (
+  <div className="flex flex-col items-center justify-center py-20 animate-in fade-in duration-500">
+    <Loader2 className="w-10 h-10 text-organic-600 animate-spin mb-4" />
+    <p className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400">{message}</p>
   </div>
 );
 
@@ -38,7 +45,6 @@ export const RatingScale: React.FC<{
   label?: string;
   max?: number;
 }> = ({ value, onChange, label, max = 10 }) => {
-  const [hovered, setHovered] = useState<number | null>(null);
   const segments = Array.from({ length: max }, (_, i) => i + 1);
 
   return (
@@ -59,8 +65,6 @@ export const RatingScale: React.FC<{
             <button
               key={num}
               type="button"
-              onMouseEnter={() => setHovered(num)}
-              onMouseLeave={() => setHovered(null)}
               onClick={(e) => { 
                 e.preventDefault(); 
                 e.stopPropagation();
@@ -180,10 +184,11 @@ export const CheckItem: React.FC<{ label: string; checked: boolean; onToggle: ()
   </button>
 );
 
-export const SaveIndicator: React.FC<{ status: 'saved' | 'saving' | 'idle' | 'local' | 'error' }> = ({ status }) => {
+export const SaveIndicator: React.FC<{ status: 'saved' | 'saving' | 'idle' | 'local' | 'error' | 'loading' }> = ({ status }) => {
   if (status === 'idle') return null;
   
   const labels = {
+    loading: 'Loading Vault...',
     saving: 'Syncing Vault...',
     saved: 'Cloud Secured',
     local: 'Stored Locally',
@@ -191,6 +196,7 @@ export const SaveIndicator: React.FC<{ status: 'saved' | 'saving' | 'idle' | 'lo
   };
 
   const icons = {
+    loading: <RefreshCw size={14} className="text-organic-500 animate-spin" />,
     saving: <RefreshCw size={14} className="text-orange-500 animate-spin" />,
     saved: <Cloud size={14} className="text-organic-600" />,
     local: <Check size={14} className="text-stone-400" />,
@@ -198,6 +204,7 @@ export const SaveIndicator: React.FC<{ status: 'saved' | 'saving' | 'idle' | 'lo
   };
 
   const colors = {
+    loading: 'border-organic-100 text-organic-600',
     saving: 'border-orange-100 text-orange-600',
     saved: 'border-organic-100 text-organic-600',
     local: 'border-stone-100 text-stone-500',

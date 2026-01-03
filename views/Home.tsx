@@ -1,16 +1,15 @@
 
-import { DailyEntry } from '../types';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { TreeOfLife } from '../components/TreeOfLife';
 import { WisdomPanel } from '../components/WisdomPanel';
 import { StorageService } from '../services/storage';
 import { useAuth } from '../services/authContext';
-import { ArrowRight, LogOut, CheckCircle2, RefreshCw } from 'lucide-react';
-import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { LoadingSpinner } from '../components/ui/Controls';
+import { ArrowRight, LogOut, CheckCircle2 } from 'lucide-react';
 
 export const Home = () => {
-  const { user, logout, loading: authLoading } = useAuth();
-  const [isSyncing, setIsSyncing] = useState(false);
+  const { user, logout, hydrated, loading: authLoading } = useAuth();
   const [stats, setStats] = useState({ 
       count: 0, 
       activity: 0, 
@@ -22,85 +21,76 @@ export const Home = () => {
   });
   const [todayCompleted, setTodayCompleted] = useState(0);
   const [todayTotal, setTodayTotal] = useState(0);
-
-  const refreshData = useCallback(async () => {
-    const data = StorageService.loadLocal();
-    const entries = Object.values(data.entries);
-    
-    // If we have a user but no entries, we are likely on a new device (Mobile)
-    if (user && entries.length === 0 && !isSyncing) {
-        setIsSyncing(true);
-        await StorageService.fetchAllEntries(user.uid);
-        setIsSyncing(false);
-        // Recurse once with fresh data
-        return refreshData();
-    }
-
-    const moodSum = entries.reduce((acc, val) => acc + (val.state?.mood || 5), 0);
-    const creativeSum = entries.reduce((acc, val) => acc + (val.effort?.creativeHours || 0), 0);
-    const stressSum = entries.reduce((acc, val) => acc + (val.state?.stress || 0), 0);
-    const claritySum = entries.reduce((acc, val) => acc + (val.state?.mentalClarity || 0), 0);
-    
-    const checklistSum = entries.reduce((acc, val) => {
-        if (!val.checklist) return acc;
-        return acc + Object.values(val.checklist).filter(Boolean).length;
-    }, 0);
-
-    setStats({
-      count: entries.length,
-      activity: entries.length > 0 ? 1 : 0,
-      avgMood: entries.length ? moodSum / entries.length : 5,
-      totalCreative: creativeSum,
-      totalStress: stressSum,
-      totalClarity: claritySum,
-      checklistComplete: checklistSum
-    });
-
-    // Today's specific checklist progress
-    const todayStr = new Date().toISOString().split('T')[0];
-    const todayEntry = await StorageService.getEntry(todayStr, user?.uid);
-    if (todayEntry && todayEntry.checklist) {
-        setTodayCompleted(Object.values(todayEntry.checklist).filter(Boolean).length);
-    }
-    
-    const config = await StorageService.getChecklistConfig(user?.uid);
-    setTodayTotal(config.filter(c => c.enabled).length);
-  }, [user, isSyncing]);
+  const [localLoading, setLocalLoading] = useState(true);
 
   useEffect(() => {
-    if (authLoading) return;
+    if (authLoading || !hydrated) return;
+
+    const refreshData = async () => {
+        setLocalLoading(true);
+        const data = await StorageService.loadLocal();
+        const entries = Object.values(data.entries);
+        
+        const moodSum = entries.reduce((acc, val) => acc + (val.state?.mood || 5), 0);
+        const creativeSum = entries.reduce((acc, val) => acc + (val.effort?.creativeHours || 0), 0);
+        const stressSum = entries.reduce((acc, val) => acc + (val.state?.stress || 0), 0);
+        const claritySum = entries.reduce((acc, val) => acc + (val.state?.mentalClarity || 0), 0);
+        
+        const checklistSum = entries.reduce((acc, val) => {
+            if (!val.checklist) return acc;
+            return acc + Object.values(val.checklist).filter(Boolean).length;
+        }, 0);
+
+        setStats({
+          count: entries.length,
+          activity: entries.length > 0 ? 1 : 0,
+          avgMood: entries.length ? moodSum / entries.length : 5,
+          totalCreative: creativeSum,
+          totalStress: stressSum,
+          totalClarity: claritySum,
+          checklistComplete: checklistSum
+        });
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        const todayEntry = data.entries[todayStr];
+        if (todayEntry && todayEntry.checklist) {
+            setTodayCompleted(Object.values(todayEntry.checklist).filter(Boolean).length);
+        }
+        
+        setTodayTotal(data.checklistConfig.filter(c => c.enabled).length);
+        setLocalLoading(false);
+    };
+
     refreshData();
-  }, [user, authLoading, refreshData]);
+  }, [user, authLoading, hydrated]);
+
+  if (authLoading || (user && !hydrated && localLoading)) {
+    return (
+      <div className="h-screen w-full bg-paper flex items-center justify-center">
+        <LoadingSpinner message="Growing your tree..." />
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-screen w-full bg-paper overflow-hidden flex flex-col items-center justify-center">
       
-      {/* Sync Status / Logout */}
-      <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
-        {isSyncing && (
-          <div className="bg-white/80 backdrop-blur px-3 py-2 rounded-full flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-organic-600 animate-pulse border border-organic-100 shadow-sm">
-            <RefreshCw size={10} className="animate-spin" /> Pulling Vault
-          </div>
-        )}
-        {user && (
-           <button 
-             type="button"
-             onClick={(e) => { e.preventDefault(); logout(); }}
-             className="bg-white/50 backdrop-blur px-4 py-2 rounded-full flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-ink hover:bg-white transition-all shadow-sm"
-           >
-             <LogOut size={12} /> Sign Out
-           </button>
-        )}
-      </div>
+      {user && (
+         <button 
+           type="button"
+           onClick={(e) => { e.preventDefault(); logout(); }}
+           className="absolute top-6 right-6 z-50 bg-white/50 backdrop-blur px-4 py-2 rounded-full flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-ink hover:bg-white transition-all shadow-sm"
+         >
+           <LogOut size={12} /> Sign Out
+         </button>
+      )}
 
-      {/* Visual Layer */}
       <TreeOfLife 
          entryCount={stats.count} 
          activityLevel={stats.activity}
          stats={stats}
       />
       
-      {/* Content Layer */}
       <div className="relative z-10 text-center space-y-6 p-8 max-w-lg animate-in fade-in duration-1000 slide-in-from-bottom-8">
          <div>
             <h2 className="font-sans text-xs font-bold text-organic-600 uppercase tracking-[0.3em] mb-4">Chronos 2026</h2>
@@ -112,16 +102,12 @@ export const Home = () => {
             </p>
          </div>
         
-        {/* AI Wisdom */}
         <WisdomPanel stats={stats} />
 
-        {/* Checklist Summary */}
         {todayTotal > 0 && (
             <div className="flex justify-center mt-4">
                 <Link to="/checklist" className="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-5 py-2 rounded-full border border-organic-100 shadow-sm hover:bg-white hover:scale-105 transition-all group">
-                    <div className="relative">
-                        <CheckCircle2 size={20} className={todayCompleted === todayTotal ? "text-organic-600" : "text-gray-400"} />
-                    </div>
+                    <CheckCircle2 size={20} className={todayCompleted === todayTotal ? "text-organic-600" : "text-gray-400"} />
                     <span className="text-xs font-bold uppercase tracking-widest text-ink">
                         Daily Habits: {todayCompleted}/{todayTotal}
                     </span>

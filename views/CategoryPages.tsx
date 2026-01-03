@@ -7,7 +7,7 @@ import { useAuth } from '../services/authContext';
 import { 
   PageContainer, SectionHeader, Card, MoodLevelSelector, 
   Counter, RatingScale, TextInput, 
-  SaveIndicator 
+  SaveIndicator, LoadingSpinner 
 } from '../components/ui/Controls';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -19,60 +19,48 @@ const DateNavigator = ({ date, setDate }: { date: string, setDate: (d: string) =
   };
   return (
     <div className="flex items-center justify-between bg-white rounded-xl p-2 mb-6 shadow-sm border border-gray-100">
-       <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeDate(-1); }} className="p-2 hover:bg-stone-50 rounded-lg text-gray-400"><ChevronLeft size={20} /></button>
+       <button type="button" onClick={(e) => { e.preventDefault(); changeDate(-1); }} className="p-2 hover:bg-stone-50 rounded-lg text-gray-400"><ChevronLeft size={20} /></button>
        <div className="flex items-center gap-2">
           <Calendar size={14} className="text-organic-600" />
           <span className="font-serif font-bold text-ink text-sm">
              {new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' })}
           </span>
        </div>
-       <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeDate(1); }} className="p-2 hover:bg-stone-50 rounded-lg text-gray-400"><ChevronRight size={20} /></button>
+       <button type="button" onClick={(e) => { e.preventDefault(); changeDate(1); }} className="p-2 hover:bg-stone-50 rounded-lg text-gray-400"><ChevronRight size={20} /></button>
     </div>
   );
 };
 
 const useDailyEntry = (dateStr: string) => {
-  const { user, loading: authLoading } = useAuth();
-  const [entry, setEntry] = useState<DailyEntry>(() => {
-    const local = StorageService.loadLocal();
-    return local.entries[dateStr] || { ...EMPTY_ENTRY, id: dateStr };
-  });
-  
-  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle' | 'local' | 'error'>('idle');
+  const { user, hydrated, loading: authLoading } = useAuth();
+  const [entry, setEntry] = useState<DailyEntry>({ ...EMPTY_ENTRY, id: dateStr });
+  const [isLoading, setIsLoading] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle' | 'local' | 'error' | 'loading'>('idle');
   const userHasEditedRef = useRef(false);
   const saveTimeoutRef = useRef<number | null>(null);
 
-  // Initial Load & Cross-Device Sync
   useEffect(() => {
-    const local = StorageService.loadLocal();
-    const cached = local.entries[dateStr] || { ...EMPTY_ENTRY, id: dateStr };
-    setEntry(cached);
+    if (authLoading || !hydrated) return;
+
+    setIsLoading(true);
+    setSaveStatus('loading');
     userHasEditedRef.current = false;
 
-    if (authLoading) return;
-
     let mounted = true;
-    setSaveStatus('saving'); // Indicate we're checking the vault
     StorageService.getEntry(dateStr, user?.uid).then(remote => {
-      if (mounted) {
-        // Only update if the user hasn't started typing on this device yet
-        if (!userHasEditedRef.current && remote) {
-          setEntry(remote);
-        }
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus(prev => prev === 'saved' ? 'idle' : prev), 1500);
+      if (mounted && !userHasEditedRef.current) {
+        setEntry(remote || { ...EMPTY_ENTRY, id: dateStr });
+        setIsLoading(false);
+        setSaveStatus('idle');
       }
-    }).catch(() => {
-        if (mounted) setSaveStatus('local');
     });
 
     return () => { 
       mounted = false; 
       if (saveTimeoutRef.current) window.clearTimeout(saveTimeoutRef.current);
     };
-  }, [dateStr, user, authLoading]);
+  }, [dateStr, user, hydrated, authLoading]);
 
-  // Handle saving with debounce
   const triggerSave = useCallback((updatedEntry: DailyEntry) => {
     if (saveTimeoutRef.current) window.clearTimeout(saveTimeoutRef.current);
     
@@ -86,31 +74,36 @@ const useDailyEntry = (dateStr: string) => {
         setSaveStatus('local');
         setTimeout(() => setSaveStatus(prev => prev === 'local' ? 'idle' : prev), 3000);
       }
-    }, 1500); 
+    }, 1000);
   }, [user]);
 
   const save = useCallback((updater: (prev: DailyEntry) => DailyEntry) => {
+    if (isLoading) return; // Prevent edits during sync
     userHasEditedRef.current = true;
     setEntry(prev => {
       const next = updater(prev);
       triggerSave(next);
       return next;
     });
-  }, [triggerSave]);
+  }, [triggerSave, isLoading]);
 
-  return { entry, save, saveStatus };
+  return { entry, save, saveStatus, isLoading };
 };
 
 const PageWrapper = ({ Component, title, subtitle }: { Component: any, title: string, subtitle: string }) => {
    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-   const { entry, save, saveStatus } = useDailyEntry(date);
+   const { entry, save, saveStatus, isLoading } = useDailyEntry(date);
 
    return (
      <PageContainer>
         <SaveIndicator status={saveStatus} />
         <DateNavigator date={date} setDate={setDate} />
         <SectionHeader title={title} subtitle={subtitle} />
-        <Component entry={entry} save={save} />
+        {isLoading ? (
+          <LoadingSpinner message="Retrieving record..." />
+        ) : (
+          <Component entry={entry} save={save} />
+        )}
      </PageContainer>
    );
 };
@@ -130,7 +123,6 @@ const StateContent = ({ entry, save }: { entry: DailyEntry, save: any }) => (
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
-                    e.stopPropagation();
                     save((p: DailyEntry) => ({
                       ...p, 
                       state: {

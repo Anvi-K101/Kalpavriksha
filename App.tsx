@@ -13,16 +13,28 @@ import {
   ReflectionsPage, MemoriesPage, FuturePage 
 } from './views/CategoryPages';
 import { StorageService } from './services/storage';
+import { LoadingSpinner } from './components/ui/Controls';
 
-// Re-implementing ArchiveView
 const Archive = () => {
   const [entries, setEntries] = React.useState<any[]>([]);
+  const { hydrated, loading: authLoading } = useAuth();
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    const data = StorageService.loadLocal();
-    const sorted = Object.values(data.entries).sort((a: any, b: any) => b.id.localeCompare(a.id));
-    setEntries(sorted);
-  }, []);
+    if (authLoading || !hydrated) return;
+
+    const loadData = async () => {
+      setLoading(true);
+      const data = await StorageService.loadLocal();
+      const sorted = Object.values(data.entries).sort((a: any, b: any) => b.id.localeCompare(a.id));
+      setEntries(sorted);
+      setLoading(false);
+    };
+    
+    loadData();
+  }, [hydrated, authLoading]);
+
+  if (loading) return <div className="min-h-screen bg-paper pt-24"><LoadingSpinner message="Opening Archive..." /></div>;
 
   return (
     <div className="min-h-screen bg-paper pb-32 pt-24 px-6 max-w-3xl mx-auto">
@@ -72,7 +84,6 @@ const ProtectedContent = () => {
         <Route path="/checklist" element={<ChecklistPage />} />
         <Route path="/accounts" element={<Accounts />} />
         
-        {/* Logging Categories */}
         <Route path="/log/state" element={<StatePage />} />
         <Route path="/log/effort" element={<EffortPage />} />
         <Route path="/log/achievements" element={<AchievementsPage />} />
