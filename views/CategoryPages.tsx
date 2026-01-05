@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { DailyEntry, RatingScale as RatingType } from '../types';
 import { COMMON_EMOTIONS, EMPTY_ENTRY, getLocalISODate } from '../constants';
@@ -28,7 +29,10 @@ const DateNavigator = ({ date, setDate }: { date: string, setDate: (d: string) =
   };
   
   return (
-    <div className="flex items-center justify-between bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 mb-10 shadow-soft border border-stone-100 animate-in slide-in-from-top-4 duration-500">
+    <div 
+      onClick={(e) => e.stopPropagation()}
+      className="flex items-center justify-between bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 mb-10 shadow-soft border border-stone-100 animate-in slide-in-from-top-4 duration-500"
+    >
        <button 
          type="button" 
          onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeDate(-1); }} 
@@ -152,7 +156,7 @@ const PageWrapper = ({ Component, title, subtitle }: { Component: any, title: st
 };
 
 const StateContent = ({ entry, save }: { entry: DailyEntry, save: any }) => (
-  <div className="space-y-8">
+  <div className="space-y-8" onClick={(e) => e.stopPropagation()}>
       <Card title="Emotional Core">
         <MoodLevelSelector value={entry.state.mood} onChange={(v) => save((p: DailyEntry) => ({...p, state: {...p.state, mood: v as RatingType}}))} />
       </Card>
@@ -205,7 +209,7 @@ const StateContent = ({ entry, save }: { entry: DailyEntry, save: any }) => (
 );
 
 const EffortContent = ({ entry, save }: { entry: DailyEntry, save: any }) => (
-    <div className="space-y-8">
+    <div className="space-y-8" onClick={(e) => e.stopPropagation()}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card title="Productive Focus">
           <div className="space-y-4">
@@ -227,20 +231,21 @@ const EffortContent = ({ entry, save }: { entry: DailyEntry, save: any }) => (
 );
 
 const AchievementsContent = ({ entry, save }: { entry: DailyEntry, save: any }) => (
-    <div className="space-y-8">
+    <div className="space-y-8" onClick={(e) => e.stopPropagation()}>
       <Card title="The Victories"><TextInput label="Wins of the Day" prompt={WRITING_PROMPTS.wins} value={entry.achievements.dailyWins} onChange={(v) => save((p: DailyEntry) => ({...p, achievements: {...p.achievements, dailyWins: v}}))} rows={3} /></Card>
       <Card title="Cognitive Shifts"><TextInput label="Breakthroughs" prompt={WRITING_PROMPTS.breakthroughs} value={entry.achievements.breakthroughs} onChange={(v) => save((p: DailyEntry) => ({...p, achievements: {...p.achievements, breakthroughs: v}}))} rows={3} /></Card>
     </div>
 );
 
 const ReflectionsContent = ({ entry, save }: { entry: DailyEntry, save: any }) => (
-    <div className="animate-in fade-in duration-700">
+    <div className="animate-in fade-in duration-700" onClick={(e) => e.stopPropagation()}>
       <Card className="min-h-[60vh] flex flex-col border-none shadow-soft/50">
         <textarea 
           className="w-full flex-grow bg-transparent border-none p-0 text-xl md:text-2xl font-serif text-ink leading-[1.8] focus:ring-0 resize-none placeholder-stone-200 selection:bg-organic-100" 
           value={entry.reflections.longForm} 
           onChange={(e) => save((p: DailyEntry) => ({...p, reflections: {...p.reflections, longForm: e.target.value}}))} 
           placeholder="Unfold the day's inner dialogue..." 
+          onClick={(e) => e.stopPropagation()}
         />
         <div className="pt-8 border-t border-stone-50 mt-8 flex justify-end items-center gap-3">
             <span className="font-mono text-[9px] text-stone-300 font-black uppercase tracking-[0.4em]">Vault Protection Active</span>
@@ -250,14 +255,14 @@ const ReflectionsContent = ({ entry, save }: { entry: DailyEntry, save: any }) =
 );
 
 const MemoriesContent = ({ entry, save }: { entry: DailyEntry, save: any }) => (
-    <div className="space-y-8">
+    <div className="space-y-8" onClick={(e) => e.stopPropagation()}>
       <Card title="Texture"><TextInput label="Moments of Joy" prompt={WRITING_PROMPTS.happy} value={entry.memory.happyMoments} onChange={(v) => save((p: DailyEntry) => ({...p, memory: {...p.memory, happyMoments: v}}))} rows={3} /></Card>
       <Card title="Connection"><TextInput label="Humans Encountered" prompt={WRITING_PROMPTS.people} value={entry.memory.peopleMet} onChange={(v) => save((p: DailyEntry) => ({...p, memory: {...p.memory, peopleMet: v}}))} rows={3} /></Card>
     </div>
 );
 
 const FutureContent = ({ entry, save }: { entry: DailyEntry, save: any }) => (
-    <div className="space-y-8">
+    <div className="space-y-8" onClick={(e) => e.stopPropagation()}>
       <Card title="Rootedness">
         <TextInput label="Gratitude" prompt={WRITING_PROMPTS.gratitude} value={entry.future.gratitude} onChange={(v) => save((p: DailyEntry) => ({...p, future: {...p.future, gratitude: v}}))} rows={4} />
       </Card>

@@ -1,14 +1,17 @@
+
 import React from 'react';
 import { Plus, Minus, Check, Cloud, RefreshCw, AlertCircle, HardDrive, Sparkles } from 'lucide-react';
 
 export const PageContainer: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={`min-h-screen pb-40 pt-10 md:pt-16 px-6 md:px-12 lg:px-20 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-700 ease-out ${className}`}>
+  <div 
+    className={`min-h-screen pb-40 pt-10 md:pt-16 px-6 md:px-12 lg:px-20 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-700 ease-out ${className}`}
+  >
     {children}
   </div>
 );
 
 export const SectionHeader: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
-  <header className="mb-10 md:mb-14 text-left">
+  <div className="mb-10 md:mb-14 text-left">
     <h1 className="font-serif text-3xl md:text-4xl text-ink font-bold mb-2 tracking-tight">
       {title}
     </h1>
@@ -17,7 +20,7 @@ export const SectionHeader: React.FC<{ title: string; subtitle?: string }> = ({ 
         {subtitle}
       </p>
     )}
-  </header>
+  </div>
 );
 
 export const Card: React.FC<{ 
@@ -26,11 +29,13 @@ export const Card: React.FC<{
   title?: string;
   action?: React.ReactNode;
 }> = ({ children, className = '', title, action }) => (
-  <div className={`
-    bg-white/60 backdrop-blur-lg rounded-[2rem] p-6 md:p-8 shadow-soft border border-stone-100/40 mb-6
-    transition-all duration-500 hover:shadow-md hover:bg-white/80 group relative
-    ${className}
-  `}>
+  <div 
+    className={`
+      bg-white/60 backdrop-blur-lg rounded-[2rem] p-6 md:p-8 shadow-soft border border-stone-100/40 mb-6
+      transition-all duration-500 hover:shadow-md hover:bg-white/80 group relative
+      ${className}
+    `}
+  >
     {(title || action) && (
       <div className="flex justify-between items-center mb-6">
         {title && <h4 className="font-serif text-lg md:text-xl font-bold text-ink/50 group-hover:text-ink/80 transition-colors tracking-tight">{title}</h4>}
@@ -54,12 +59,12 @@ export const RatingScale: React.FC<{
       {label && (
         <div className="flex justify-between mb-3 items-center">
           <label className="font-serif text-ink/40 text-[10px] font-bold uppercase tracking-widest">{label}</label>
-          <span className="font-mono text-xs font-black text-organic-700 bg-white/80 px-2.5 py-1 rounded-lg border border-stone-100 shadow-sm" aria-live="polite">
+          <span className="font-mono text-xs font-black text-organic-700 bg-white/80 px-2.5 py-1 rounded-lg border border-stone-100 shadow-sm">
             {value || '—'}
           </span>
         </div>
       )}
-      <div className="grid grid-cols-5 md:grid-cols-10 gap-2" role="group" aria-label={label || "Rating scale"}>
+      <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
         {segments.map((num) => {
           const isActive = value !== null && num <= value;
           const isCurrent = value === num;
@@ -67,8 +72,11 @@ export const RatingScale: React.FC<{
             <button
               key={num}
               type="button"
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(num); }}
-              aria-pressed={isCurrent}
+              onClick={(e) => { 
+                e.preventDefault(); 
+                e.stopPropagation(); 
+                onChange(num); 
+              }}
               className={`
                 h-10 rounded-xl font-mono text-[11px] font-bold transition-all duration-300 border
                 ${isActive 
@@ -98,7 +106,7 @@ export const MoodLevelSelector: React.FC<{ value: number | null, onChange: (val:
   ];
 
   return (
-    <div className="grid grid-cols-5 gap-2 w-full" role="group" aria-label="Mood level selector">
+    <div className="grid grid-cols-5 gap-2 w-full">
       {levels.map((level) => {
         const isSelected = value !== null && (
           level.val === 1 ? value <= 2 :
@@ -112,8 +120,11 @@ export const MoodLevelSelector: React.FC<{ value: number | null, onChange: (val:
           <button
             key={level.label}
             type="button"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(level.val); }}
-            aria-pressed={isSelected}
+            onClick={(e) => { 
+              e.preventDefault(); 
+              e.stopPropagation(); 
+              onChange(level.val); 
+            }}
             className={`
               flex flex-col items-center justify-center py-4 rounded-2xl border transition-all duration-500 active:scale-95 cursor-pointer outline-none
               ${isSelected 
@@ -122,7 +133,7 @@ export const MoodLevelSelector: React.FC<{ value: number | null, onChange: (val:
               }
             `}
           >
-            <span className="text-[7px] uppercase font-bold tracking-widest opacity-40 mb-1" aria-hidden="true">{level.val}</span>
+            <span className="text-[7px] uppercase font-bold tracking-widest opacity-40 mb-1">{level.val}</span>
             <span className="font-serif font-bold text-[10px] uppercase tracking-tight">{level.label}</span>
           </button>
         );
@@ -132,23 +143,23 @@ export const MoodLevelSelector: React.FC<{ value: number | null, onChange: (val:
 };
 
 export const Counter: React.FC<{ value: number; onChange: (val: number) => void; label: string }> = ({ value, onChange, label }) => (
-  <div className="flex items-center justify-between py-4 border-b border-dashed border-stone-100 last:border-0 group">
+  <div 
+    className="flex items-center justify-between py-4 border-b border-dashed border-stone-100 last:border-0 group"
+  >
     <span className="font-serif text-ink/70 text-base group-hover:text-ink transition-colors duration-300">{label}</span>
     <div className="flex items-center gap-2 bg-stone-50/50 rounded-full p-1 border border-stone-100">
       <button 
         type="button" 
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(Math.max(0, value - 1)); }} 
         className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-stone-300 hover:text-ink active:scale-75 transition-all outline-none"
-        aria-label={`Decrease ${label}`}
       >
         <Minus size={14} />
       </button>
-      <span className="w-6 text-center font-black text-ink text-sm tabular-nums" aria-live="polite">{value}</span>
+      <span className="w-6 text-center font-black text-ink text-sm tabular-nums">{value}</span>
       <button 
         type="button" 
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(value + 1); }} 
         className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-stone-300 hover:text-ink active:scale-75 transition-all outline-none"
-        aria-label={`Increase ${label}`}
       >
         <Plus size={14} />
       </button>
@@ -168,19 +179,17 @@ export const Stepper: React.FC<{
       type="button" 
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(Math.max(0, value - step)); }} 
       className="w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-stone-200 hover:text-ink active:scale-75 transition-all outline-none"
-      aria-label="Decrease value"
     >
       <Minus size={12} />
     </button>
     <div className="flex items-baseline gap-1 min-w-[2.2rem] justify-center">
-      <span className="font-mono font-bold text-ink text-sm tabular-nums" aria-live="polite">{value}</span>
+      <span className="font-mono font-bold text-ink text-sm tabular-nums">{value}</span>
       {unit && <span className="text-[8px] font-black uppercase text-stone-300">{unit}</span>}
     </div>
     <button 
       type="button" 
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(max !== undefined ? Math.min(max, value + step) : value + step); }} 
       className="w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-stone-200 hover:text-ink active:scale-75 transition-all outline-none"
-      aria-label="Increase value"
     >
       <Plus size={12} />
     </button>
@@ -193,16 +202,16 @@ export const ChipGroup: React.FC<{
   onChange: (vals: string[]) => void; 
   single?: boolean 
 }> = ({ options, selected, onChange, single }) => (
-  <div className="flex flex-wrap gap-2" role="group">
+  <div className="flex flex-wrap gap-2">
     {options.map(opt => {
       const isSelected = selected.includes(opt);
       return (
         <button
           key={opt}
           type="button"
-          aria-pressed={isSelected}
           onClick={(e) => {
-            e.preventDefault(); e.stopPropagation();
+            e.preventDefault(); 
+            e.stopPropagation();
             if (single) {
               onChange([opt]);
             } else {
@@ -233,37 +242,32 @@ export const TextInput: React.FC<{
   prompt?: string;
   rows?: number; 
   className?: string 
-}> = ({ label, value, onChange, placeholder, prompt, rows = 1, className }) => {
-  const id = React.useId();
-  return (
-    <div className={`mb-8 ${className}`}>
-      {label && (
-        <div className="flex items-center justify-between mb-2 px-1">
-          <label htmlFor={id} className="block font-sans text-[9px] font-black text-stone-300 uppercase tracking-[0.3em]">{label}</label>
-          {prompt && !value && (
-            <div className="flex items-center gap-1.5 text-[9px] text-stone-200 italic">
-              <Sparkles size={10} />
-              <span>{prompt}</span>
-            </div>
-          )}
-        </div>
-      )}
-      <textarea
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder || "..."}
-        rows={rows}
-        onClick={(e) => { e.stopPropagation(); }}
-        className="
-          w-full bg-transparent border-b border-stone-100 focus:border-ink/20 py-3 px-1
-          font-serif text-lg text-ink focus:outline-none transition-all 
-          resize-none rounded-none placeholder-stone-200 selection:bg-stone-100
-        "
-      />
-    </div>
-  );
-};
+}> = ({ label, value, onChange, placeholder, prompt, rows = 1, className }) => (
+  <div className={`mb-8 ${className}`}>
+    {label && (
+      <div className="flex items-center justify-between mb-2 px-1">
+        <label className="block font-sans text-[9px] font-black text-stone-300 uppercase tracking-[0.3em]">{label}</label>
+        {prompt && !value && (
+          <div className="flex items-center gap-1.5 text-[9px] text-stone-200 italic">
+            <Sparkles size={10} />
+            <span>{prompt}</span>
+          </div>
+        )}
+      </div>
+    )}
+    <textarea
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder || "..."}
+      rows={rows}
+      className="
+        w-full bg-transparent border-b border-stone-100 focus:border-ink/20 py-3 px-1
+        font-serif text-lg text-ink focus:outline-none transition-all 
+        resize-none rounded-none placeholder-stone-200 selection:bg-stone-100
+      "
+    />
+  </div>
+);
 
 export const MinimalInput: React.FC<{ 
   value: string; 
@@ -275,23 +279,19 @@ export const MinimalInput: React.FC<{
   const common = `w-full bg-transparent border-none focus:ring-0 p-0 placeholder-stone-200 transition-all focus:outline-none text-base ${className}`;
   return multiline ? (
     <textarea 
-      aria-label={placeholder || "Text input"}
       value={value} 
       onChange={(e) => onChange(e.target.value)} 
       placeholder={placeholder} 
       rows={2} 
       className={common}
-      onClick={(e) => e.stopPropagation()} 
     />
   ) : (
     <input 
-      aria-label={placeholder || "Text input"}
       type="text" 
       value={value} 
       onChange={(e) => onChange(e.target.value)} 
       placeholder={placeholder} 
       className={common}
-      onClick={(e) => e.stopPropagation()} 
     />
   );
 };
@@ -299,8 +299,11 @@ export const MinimalInput: React.FC<{
 export const CheckItem: React.FC<{ label: string; checked: boolean; onToggle: () => void }> = ({ label, checked, onToggle }) => (
   <button 
     type="button" 
-    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggle(); }} 
-    aria-pressed={checked}
+    onClick={(e) => { 
+      e.preventDefault(); 
+      e.stopPropagation(); 
+      onToggle(); 
+    }} 
     className={`
       w-full flex items-center gap-4 p-5 rounded-[1.5rem] border transition-all duration-500 text-left active:scale-[0.98] cursor-pointer outline-none
       ${checked 
@@ -334,7 +337,7 @@ export const SaveIndicator: React.FC<{ status: 'saved' | 'saving' | 'idle' | 'lo
   };
   const current = config[status as keyof typeof config] || config.local;
   return (
-    <div className="fixed top-6 right-6 z-[100] pointer-events-none" aria-live="assertive">
+    <div className="fixed top-6 right-6 z-[100] pointer-events-none">
       <div className={`px-4 py-2 rounded-full shadow-lg border backdrop-blur-xl flex items-center gap-2.5 ${current.color} animate-in fade-in slide-in-from-top-2 duration-500`}>
          <div className="opacity-60">{current.icon}</div>
          <span className="text-[9px] font-black uppercase tracking-[0.2em]">{current.label}</span>

@@ -1,15 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../services/authContext';
 import { ArrowRight, ShieldCheck, TreePine, AlertCircle, MousePointer2, Layers, CheckCircle2, Loader2 } from 'lucide-react';
 
-interface OnboardingProps {
-  forcedView?: 'welcome' | 'auth' | 'tutorial';
-  onTutorialEnd: () => void;
-}
-
-export const Onboarding: React.FC<OnboardingProps> = ({ forcedView, onTutorialEnd }) => {
+export const Onboarding = () => {
   const { signInGoogle, signInEmail, signUpEmail } = useAuth();
-  const [view, setView] = useState<'welcome' | 'auth' | 'tutorial'>(forcedView || 'welcome');
+  const [view, setView] = useState<'welcome' | 'auth' | 'tutorial'>('welcome');
   const [tutorialStep, setTutorialStep] = useState(0);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('signup');
   const [email, setEmail] = useState('');
@@ -17,13 +12,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ forcedView, onTutorialEn
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (forcedView) setView(forcedView);
-  }, [forcedView]);
-
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     setLoading(true);
     setError('');
     try {
@@ -37,16 +27,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ forcedView, onTutorialEn
       setError(err.message || 'Identity verification failed.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      await signInGoogle();
-    } catch (err: any) {
-      setError(err.message || 'Google Auth failed.');
     }
   };
 
@@ -64,8 +44,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ forcedView, onTutorialEn
         <div className="space-y-6 w-full max-w-xs">
           <button 
             type="button"
-            onClick={(e) => { e.stopPropagation(); setView('auth'); }}
-            className="w-full py-5 bg-ink text-paper rounded-full font-sans font-black uppercase tracking-[0.4em] text-[10px] hover:bg-stone-800 transition-all shadow-xl flex items-center justify-center gap-3 outline-none"
+            onClick={() => setView('auth')}
+            className="w-full py-5 bg-ink text-paper rounded-full font-sans font-black uppercase tracking-[0.4em] text-[10px] hover:bg-stone-800 transition-all shadow-xl flex items-center justify-center gap-3"
           >
             Access Vault <ArrowRight size={14} />
           </button>
@@ -110,7 +90,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ forcedView, onTutorialEn
             {current.icon}
          </div>
          <h2 className="font-serif text-4xl font-bold text-ink mb-4">{current.title}</h2>
-         <p className="font-serif text-lg text-stone-400 text-center max-w-sm leading-relaxed mb-12 italic text-balance">
+         <p className="font-serif text-lg text-stone-400 text-center max-w-sm leading-relaxed mb-12 italic">
            "{current.text}"
          </p>
          
@@ -122,12 +102,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ forcedView, onTutorialEn
 
          <button 
            type="button"
-           onClick={(e) => {
-             e.stopPropagation();
+           onClick={() => {
              if (tutorialStep < steps.length - 1) {
                setTutorialStep(tutorialStep + 1);
              } else {
-               onTutorialEnd();
+               window.location.reload(); 
              }
            }}
            className="px-10 py-5 bg-ink text-paper rounded-full font-sans font-black uppercase tracking-[0.4em] text-[11px] shadow-xl active:scale-95 transition-all outline-none"
@@ -146,8 +125,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ forcedView, onTutorialEn
 
         <button 
           type="button"
-          onClick={handleGoogleSignIn}
-          className="w-full py-4 bg-white border border-stone-100 text-ink rounded-[1.5rem] font-sans font-black uppercase tracking-[0.2em] text-[10px] hover:bg-stone-50 transition-all flex items-center justify-center gap-3 mb-8 shadow-soft outline-none active:scale-95"
+          onClick={() => signInGoogle()}
+          className="w-full py-4 bg-white border border-stone-100 text-ink rounded-[1.5rem] font-sans font-black uppercase tracking-[0.2em] text-[10px] hover:bg-stone-50 transition-all flex items-center justify-center gap-3 mb-8 shadow-soft outline-none"
         >
           <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="Google" />
           Authenticate with Google
@@ -156,13 +135,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ forcedView, onTutorialEn
         <form onSubmit={handleAuth} className="space-y-4">
           <input 
             type="email" placeholder="Email" 
-            onClick={(e) => e.stopPropagation()}
             className="w-full p-4 bg-stone-50/50 border border-stone-100 rounded-[1.5rem] font-serif text-ink focus:outline-none focus:bg-white transition-all"
             value={email} onChange={e => setEmail(e.target.value)} required
           />
           <input 
             type="password" placeholder="Password" 
-            onClick={(e) => e.stopPropagation()}
             className="w-full p-4 bg-stone-50/50 border border-stone-100 rounded-[1.5rem] font-serif text-ink focus:outline-none focus:bg-white transition-all"
             value={password} onChange={e => setPassword(e.target.value)} required
           />
@@ -175,7 +152,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ forcedView, onTutorialEn
 
           <button 
             type="submit" disabled={loading}
-            className="w-full py-5 bg-ink text-white rounded-[1.5rem] font-sans font-black uppercase tracking-[0.4em] text-[10px] hover:bg-stone-800 transition-all shadow-lg flex items-center justify-center outline-none active:scale-95"
+            className="w-full py-5 bg-ink text-white rounded-[1.5rem] font-sans font-black uppercase tracking-[0.4em] text-[10px] hover:bg-stone-800 transition-all shadow-lg flex items-center justify-center outline-none"
           >
             {loading ? <Loader2 className="animate-spin" size={16} /> : (authMode === 'signup' ? 'Initiate New Archive' : 'Reopen Vault')}
           </button>
@@ -183,7 +160,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ forcedView, onTutorialEn
 
         <button 
           type="button"
-          onClick={(e) => { e.stopPropagation(); setAuthMode(authMode === 'login' ? 'signup' : 'login'); }}
+          onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
           className="w-full mt-8 text-[10px] font-black uppercase tracking-[0.2em] text-stone-300 hover:text-ink transition-colors outline-none"
         >
           {authMode === 'signup' ? 'Already Have A Vault?' : 'Need A New Private Vault?'}

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { Sparkles, Quote } from 'lucide-react';
@@ -54,7 +55,10 @@ export const WisdomPanel: React.FC<WisdomPanelProps> = ({ stats }) => {
   if (stats.count === 0 || (!reflection && !loading)) return null;
 
   return (
-    <div className="mt-8 bg-white/40 backdrop-blur-md border border-organic-100/50 p-6 rounded-3xl shadow-soft max-w-sm mx-auto animate-in fade-in slide-in-from-top-4 duration-700">
+    <div 
+      onClick={(e) => e.stopPropagation()}
+      className="mt-8 bg-white/40 backdrop-blur-md border border-organic-100/50 p-6 rounded-3xl shadow-soft max-w-sm mx-auto animate-in fade-in slide-in-from-top-4 duration-700"
+    >
       <div className="flex justify-center mb-3">
         <div className="p-2 bg-organic-50 rounded-full text-organic-400">
           <Quote size={14} />
@@ -73,7 +77,7 @@ export const WisdomPanel: React.FC<WisdomPanelProps> = ({ stats }) => {
       <div className="mt-4 flex justify-center">
         <button 
           type="button"
-          onClick={(e) => generateInsight(e)}
+          onClick={generateInsight}
           className="text-[9px] font-bold uppercase tracking-[0.2em] text-organic-400 hover:text-organic-600 transition-colors flex items-center gap-1 outline-none"
         >
           <Sparkles size={10} /> Refresh Insight

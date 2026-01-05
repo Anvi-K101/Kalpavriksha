@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { DailyEntry, ChecklistItemConfig } from '../types';
 import { StorageService } from '../services/storage';
@@ -79,7 +80,6 @@ export const ChecklistPage = () => {
 
   const addItem = (e: React.MouseEvent) => {
       e.preventDefault();
-      e.stopPropagation();
       const newItem: ChecklistItemConfig = {
           id: Date.now().toString(),
           label: 'New Ritual',
@@ -105,9 +105,8 @@ export const ChecklistPage = () => {
       <div className="flex justify-between items-center mb-12">
           <SectionHeader title="Rituals" subtitle="Daily Disciplines" />
           <button 
-             type="button"
-             onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsEditing(!isEditing); }}
-             className={`p-4 rounded-3xl transition-all shadow-soft flex items-center gap-2 outline-none ${isEditing ? 'bg-ink text-white' : 'bg-white text-stone-400 hover:text-ink'}`}
+             onClick={() => setIsEditing(!isEditing)}
+             className={`p-4 rounded-3xl transition-all shadow-soft flex items-center gap-2 ${isEditing ? 'bg-ink text-white' : 'bg-white text-stone-400 hover:text-ink'}`}
           >
               <span className="text-[10px] font-black uppercase tracking-[0.2em] px-2">{isEditing ? 'Save' : 'Edit'}</span>
               {isEditing ? <Check size={18} /> : <Settings size={18} />}
@@ -123,24 +122,18 @@ export const ChecklistPage = () => {
                       <input 
                           value={item.label}
                           onChange={(e) => updateItem(item.id, { label: e.target.value })}
-                          onClick={(e) => e.stopPropagation()}
                           className="flex-grow p-2 bg-transparent font-serif text-lg text-ink focus:outline-none border-b border-stone-100"
                           placeholder="Habit Label"
                       />
-                      <button 
-                        type="button" 
-                        onClick={(e) => { e.stopPropagation(); removeItem(item.id); }} 
-                        className="text-stone-300 hover:text-red-500 p-2 transition-colors outline-none"
-                      >
+                      <button onClick={() => removeItem(item.id)} className="text-stone-300 hover:text-red-500 p-2 transition-colors">
                           <Trash2 size={18} />
                       </button>
                     </div>
                     
                     <div className="flex items-center gap-6 pt-2">
                        <button 
-                         type="button"
-                         onClick={(e) => { e.stopPropagation(); updateItem(item.id, { notificationsEnabled: !item.notificationsEnabled }); }}
-                         className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest outline-none ${item.notificationsEnabled ? 'text-organic-600' : 'text-stone-300'}`}
+                         onClick={() => updateItem(item.id, { notificationsEnabled: !item.notificationsEnabled })}
+                         className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${item.notificationsEnabled ? 'text-organic-600' : 'text-stone-300'}`}
                        >
                          {item.notificationsEnabled ? <Bell size={14} /> : <BellOff size={14} />}
                          {item.notificationsEnabled ? 'Reminders On' : 'Reminders Off'}
@@ -153,7 +146,6 @@ export const ChecklistPage = () => {
                               type="time"
                               value={item.notifyTime}
                               onChange={(e) => updateItem(item.id, { notifyTime: e.target.value })}
-                              onClick={(e) => e.stopPropagation()}
                               className="bg-transparent text-[10px] font-mono text-ink outline-none"
                            />
                          </div>
@@ -163,9 +155,8 @@ export const ChecklistPage = () => {
                 </Card>
             ))}
             <button 
-               type="button"
                onClick={addItem}
-               className="w-full py-6 border-2 border-dashed border-stone-200 text-stone-300 rounded-3xl hover:border-ink hover:text-ink transition-all flex items-center justify-center gap-3 font-black uppercase text-[10px] tracking-[0.3em] outline-none"
+               className="w-full py-6 border-2 border-dashed border-stone-200 text-stone-300 rounded-3xl hover:border-ink hover:text-ink transition-all flex items-center justify-center gap-3 font-black uppercase text-[10px] tracking-[0.3em]"
             >
                 <Plus size={18} /> New Ritual
             </button>

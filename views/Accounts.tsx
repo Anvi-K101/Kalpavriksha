@@ -16,9 +16,7 @@ export const Accounts = () => {
     setStats({ totalEntries: Object.keys(data.entries).length });
   }, []);
 
-  const handleFullTransfer = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleFullTransfer = async () => {
     const entry = await StorageService.getEntry(selectedDate, user?.uid || '');
     if (!entry) {
         alert("No node found for this date.");
@@ -48,18 +46,6 @@ export const Accounts = () => {
     }
   };
 
-  const handleExport = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    StorageService.exportData();
-  };
-
-  const handleLogoutAction = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    logout();
-  };
-
   if (!user) return null;
 
   return (
@@ -76,10 +62,8 @@ export const Accounts = () => {
         </div>
         <div className="flex-grow">
           <h2 className="font-serif text-2xl font-bold text-ink leading-tight tracking-tight">{user.displayName || 'Vault Owner'}</h2>
-          {/* User login email explicitly displayed as requested */}
-          <p className="text-stone-400 font-mono text-[10px] mt-0.5 opacity-60 lowercase select-all">{user.email}</p>
-          <p className="text-stone-300 text-[9px] font-sans uppercase tracking-[0.3em] flex items-center gap-2 mt-2">
-            <ShieldCheck size={10} className="text-organic-600" />
+          <p className="text-stone-400 text-[10px] font-sans uppercase tracking-[0.3em] flex items-center gap-2.5 mt-2">
+            <ShieldCheck size={12} className="text-organic-600" />
             Verified Instance
           </p>
         </div>
@@ -89,27 +73,23 @@ export const Accounts = () => {
         <Card title="System Transfer">
            <div className="space-y-5">
               <p className="text-[11px] text-stone-400 leading-relaxed font-serif italic">
-                Export an entire daily chronicle into your mobile system.
+                Export an entire daily chronicle into your mobile system (Apple Journal).
               </p>
-              <form className="flex gap-3" onSubmit={(e) => e.preventDefault()}>
-                 <label className="sr-only" htmlFor="export-date">Date to export</label>
+              <div className="flex gap-3">
                  <input 
-                    id="export-date"
                     type="date" 
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
                     className="flex-grow bg-white/40 border border-stone-100 rounded-2xl px-4 py-2.5 text-xs font-mono text-ink focus:outline-none focus:bg-white transition-all"
                  />
                  <button 
                     type="button" 
-                    onClick={handleFullTransfer}
-                    className="p-3 bg-ink text-white rounded-2xl hover:bg-stone-800 active:scale-90 transition-all shadow-md outline-none"
-                    aria-label="Share node data"
+                    onClick={(e) => { e.preventDefault(); handleFullTransfer(); }}
+                    className="p-3 bg-ink text-white rounded-2xl hover:bg-stone-800 active:scale-90 transition-all shadow-md"
                  >
                     <Share2 size={18} />
                  </button>
-              </form>
+              </div>
            </div>
         </Card>
 
@@ -130,16 +110,16 @@ export const Accounts = () => {
       <div className="grid grid-cols-2 gap-4 mb-20">
         <button 
           type="button"
-          onClick={handleExport}
-          className="py-4 bg-white/40 backdrop-blur-md border border-stone-100 text-stone-500 rounded-[1.5rem] font-sans font-bold uppercase tracking-widest text-[10px] hover:bg-white hover:text-ink transition-all flex items-center justify-center gap-3 outline-none active:scale-95"
+          onClick={(e) => { e.preventDefault(); StorageService.exportData(); }}
+          className="py-4 bg-white/40 backdrop-blur-md border border-stone-100 text-stone-500 rounded-[1.5rem] font-sans font-bold uppercase tracking-widest text-[10px] hover:bg-white hover:text-ink transition-all flex items-center justify-center gap-3 outline-none"
         >
           <Download size={16} /> JSON Backup
         </button>
 
         <button 
           type="button"
-          onClick={handleLogoutAction}
-          className="py-4 bg-stone-100 text-stone-400 rounded-[1.5rem] font-sans font-bold uppercase tracking-widest text-[10px] hover:bg-stone-200 hover:text-ink transition-all flex items-center justify-center gap-3 outline-none active:scale-95"
+          onClick={(e) => { e.preventDefault(); logout(); }}
+          className="py-4 bg-stone-100 text-stone-400 rounded-[1.5rem] font-sans font-bold uppercase tracking-widest text-[10px] hover:bg-stone-200 hover:text-ink transition-all flex items-center justify-center gap-3 outline-none"
         >
           <LogOut size={16} /> Close Vault
         </button>
@@ -151,7 +131,7 @@ export const Accounts = () => {
             <span className="text-[10px] uppercase font-bold tracking-[0.4em] text-stone-400">Chronos System 1.0.6 — AES Isolated</span>
          </div>
          <p className="text-[11px] font-black uppercase tracking-[0.5em] text-stone-300/60 animate-in fade-in duration-1000 delay-500">
-           Refining Human Potential
+           Made by Anvi Karanjkar
          </p>
       </div>
     </PageContainer>
