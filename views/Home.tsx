@@ -4,7 +4,7 @@ import { TreeOfLife } from '../components/TreeOfLife';
 import { WisdomPanel } from '../components/WisdomPanel';
 import { StorageService } from '../services/storage';
 import { useAuth } from '../services/authContext';
-import { ArrowRight, LogOut, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, LogOut, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { getLocalISODate } from '../constants';
 
 export const Home = () => {
@@ -23,22 +23,13 @@ export const Home = () => {
 
   useEffect(() => {
     if (authLoading || !user) return;
-
     const refreshData = async () => {
-        // Load local initially
         const data = StorageService.loadLocal();
         const entries = Object.values(data.entries);
-        
         const moodSum = entries.reduce((acc, val) => acc + (val.state?.mood || 5), 0);
         const creativeSum = entries.reduce((acc, val) => acc + (val.effort?.creativeHours || 0), 0);
         const stressSum = entries.reduce((acc, val) => acc + (val.state?.stress || 0), 0);
         const claritySum = entries.reduce((acc, val) => acc + (val.state?.mentalClarity || 0), 0);
-        
-        const checklistSum = entries.reduce((acc, val) => {
-            if (!val.checklist) return acc;
-            return acc + Object.values(val.checklist).filter(Boolean).length;
-        }, 0);
-
         setStats({
           count: entries.length,
           activity: entries.length > 0 ? 1 : 0,
@@ -46,80 +37,95 @@ export const Home = () => {
           totalCreative: creativeSum,
           totalStress: stressSum,
           totalClarity: claritySum,
-          checklistComplete: checklistSum
+          checklistComplete: entries.reduce((acc, val) => acc + (val.checklist ? Object.values(val.checklist).filter(Boolean).length : 0), 0)
         });
-
-        // Today's specific checklist progress - using local date consistency
         const todayStr = getLocalISODate();
         const [todayEntry, config] = await Promise.all([
           StorageService.getEntry(todayStr, user.uid),
           StorageService.getChecklistConfig(user.uid)
         ]);
-        
         if (todayEntry && todayEntry.checklist) {
             setTodayCompleted(Object.values(todayEntry.checklist).filter(Boolean).length);
         }
         setTodayTotal(config.filter(c => c.enabled).length);
     };
-
     refreshData();
   }, [user, authLoading]);
 
   return (
-    <div className="relative h-screen w-full bg-paper overflow-hidden flex flex-col items-center justify-center">
+    <div className="relative h-screen w-full bg-paper overflow-hidden flex flex-col items-center justify-center border-none shadow-none no-tap-highlight">
       
-      {/* Logout Button */}
-      {user && (
-         <button 
-           type="button"
-           onClick={(e) => { e.preventDefault(); logout(); }}
-           className="absolute top-6 right-6 z-50 bg-white/50 backdrop-blur px-4 py-2 rounded-full flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-ink hover:bg-white transition-all shadow-sm"
-         >
-           <LogOut size={12} /> Sign Out
-         </button>
-      )}
+      {/* Subtle Background Ambience */}
+      <div className="absolute top-1/4 left-1/4 w-56 h-56 bg-organic-50/40 rounded-full blur-[90px] pointer-events-none animate-pulse duration-[5000ms]" />
+      <div className="absolute bottom-1/4 right-1/4 w-56 h-56 bg-stone-50/60 rounded-full blur-[90px] pointer-events-none animate-pulse duration-[7000ms]" />
+
+      {/* Top Header Controls */}
+      <div className="absolute top-8 left-8 right-8 z-50 flex justify-between items-center pointer-events-none border-none">
+         <div className="bg-white/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-stone-100/40 shadow-soft animate-in slide-in-from-left-6 duration-700 flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-organic-500/50" />
+            <span className="text-[9px] font-black uppercase tracking-[0.45em] text-organic-700/70">Archive Synchronized</span>
+         </div>
+         {user && (
+            <button 
+              type="button"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); logout(); }}
+              className="pointer-events-auto bg-white/40 backdrop-blur-md px-4 py-1.5 rounded-full flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-stone-400 hover:text-ink active:scale-90 transition-all border border-stone-100/20 outline-none"
+            >
+              <LogOut size={12} /> Secure Exit
+            </button>
+         )}
+      </div>
 
       {/* Visual Layer */}
-      <TreeOfLife 
-         entryCount={stats.count} 
-         activityLevel={stats.activity}
-         stats={stats}
-      />
+      <div className="absolute inset-0 z-0 animate-in fade-in duration-[2000ms] pointer-events-none">
+        <TreeOfLife 
+           entryCount={stats.count} 
+           activityLevel={stats.activity}
+           stats={stats}
+        />
+      </div>
       
       {/* Content Layer */}
-      <div className="relative z-10 text-center space-y-6 p-8 max-w-lg animate-in fade-in duration-1000 slide-in-from-bottom-8">
+      <div className="relative z-10 text-center space-y-8 p-10 max-w-xl bg-paper/5 backdrop-blur-[2px] rounded-[3rem] animate-in zoom-in-95 duration-700 border-none shadow-none">
          <div>
-            <h2 className="font-sans text-xs font-bold text-organic-600 uppercase tracking-[0.3em] mb-4">Chronos 2026</h2>
-            <h1 className="font-serif text-5xl md:text-6xl text-ink font-bold tracking-tighter mb-4 leading-tight drop-shadow-sm">
-              {stats.count === 0 ? "The Seed." : "The Tree."}
+            <h1 className="font-serif text-5xl md:text-6xl text-ink font-bold tracking-tighter mb-3 leading-tight drop-shadow-sm">
+              {stats.count === 0 ? "The Void." : "Chronos."}
             </h1>
-            <p className="font-serif text-lg md:text-xl text-gray-500 italic">
-               "{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}"
-            </p>
+            <div className="flex items-center justify-center gap-2.5 opacity-40 mt-3">
+                <ShieldCheck size={16} className="text-organic-600" />
+                <p className="font-serif text-sm md:text-base text-stone-500 italic tracking-wide">
+                  {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                </p>
+            </div>
          </div>
         
         {/* AI Wisdom */}
-        <WisdomPanel stats={stats} />
+        <div className="animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-300">
+          <WisdomPanel stats={stats} />
+        </div>
 
-        {/* Checklist Summary */}
-        {todayTotal > 0 && (
-            <div className="flex justify-center mt-4">
-                <Link to="/checklist" className="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-5 py-2 rounded-full border border-organic-100 shadow-sm hover:bg-white hover:scale-105 transition-all group">
-                    <div className="relative">
-                        <CheckCircle2 size={20} className={todayCompleted === todayTotal ? "text-organic-600" : "text-gray-400"} />
-                    </div>
-                    <span className="text-xs font-bold uppercase tracking-widest text-ink">
-                        Daily Habits: {todayCompleted}/{todayTotal}
+        {/* Action Row */}
+        <div className="flex flex-col items-center gap-5 pt-6">
+            {todayTotal > 0 && (
+                <Link to="/checklist" className="flex items-center gap-4 bg-white/50 backdrop-blur-md px-6 py-3 rounded-full border border-stone-100/40 shadow-sm hover:shadow-soft hover:-translate-y-1 active:scale-95 transition-all outline-none">
+                    <CheckCircle2 size={16} className={todayCompleted === todayTotal ? "text-organic-600" : "text-stone-300"} />
+                    <span className="text-[10px] font-black uppercase tracking-[0.25em] text-ink/80">
+                        Ritual Flow: {todayCompleted}/{todayTotal}
                     </span>
                 </Link>
-            </div>
-        )}
+            )}
 
-         <div className="pt-6">
-           <Link to="/log/state" className="group inline-flex items-center gap-3 px-8 py-4 bg-ink text-paper rounded-full font-sans font-bold uppercase tracking-widest text-xs hover:bg-organic-800 transition-all shadow-xl hover:shadow-2xl hover:scale-105">
-             Update Record <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+           <Link to="/log/state" className="group relative inline-flex items-center gap-4 px-10 py-5 bg-ink text-paper rounded-full font-sans font-black uppercase tracking-[0.4em] text-[10px] hover:bg-stone-800 transition-all shadow-xl hover:-translate-y-1 active:scale-95 outline-none">
+             <span className="relative z-10">Capture Node</span>
+             <ArrowRight size={16} className="relative z-10 group-hover:translate-x-1.5 transition-transform duration-500" />
+             <div className="absolute inset-0 bg-white/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-500" />
            </Link>
-         </div>
+        </div>
+      </div>
+
+      {/* Footer Info */}
+      <div className="absolute bottom-8 text-center opacity-10 pointer-events-none">
+         <p className="text-[8px] font-black uppercase tracking-[0.7em]">Chronos System 1.0.6 — Isolated</p>
       </div>
     </div>
   );

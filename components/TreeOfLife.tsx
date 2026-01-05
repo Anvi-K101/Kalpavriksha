@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
@@ -10,7 +9,7 @@ interface TreeOfLifeProps {
     totalCreative: number;
     totalStress: number;
     totalClarity: number;
-    checklistComplete: number; // New prop
+    checklistComplete: number;
   }
 }
 
@@ -29,50 +28,26 @@ export const TreeOfLife: React.FC<TreeOfLifeProps> = ({
     const width = svgRef.current.clientWidth;
     const height = svgRef.current.clientHeight;
     
-    // Config based on data
     const growthStage = Math.min(Math.log(Math.max(entryCount, 1) + 1) * 3 + 3, 16); 
-    const moodColor = d3.interpolateLab("#a8a29e", "#4d7c0f")(stats.avgMood / 10);
-    const stressFactor = Math.min(stats.totalStress / 50, 1); // 0 to 1
-    const waterLevel = Math.min(stats.totalClarity * 2, 100); 
+    const moodColor = d3.interpolateLab("#a8a29e", "#426842")(stats.avgMood / 10);
+    const stressFactor = Math.min(stats.totalStress / 50, 1);
     
-    // Background Elements (Water/Sun)
     const defs = svg.append("defs");
     
-    // Ground Gradient
-    const groundGrad = defs.append("linearGradient").attr("id", "groundGrad").attr("x1", "0%").attr("y1", "0%").attr("x2", "0%").attr("y2", "100%");
-    groundGrad.append("stop").attr("offset", "0%").attr("stop-color", "#fdfbf7").attr("stop-opacity", 0);
-    groundGrad.append("stop").attr("offset", "50%").attr("stop-color", "#e7e5e4").attr("stop-opacity", 0.5);
-
-    // Draw Ground
-    svg.append("rect")
-       .attr("x", 0)
-       .attr("y", height - 60)
-       .attr("width", width)
-       .attr("height", 60)
-       .attr("fill", "url(#groundGrad)");
-
-    // Water (Mental Clarity)
-    if (waterLevel > 10) {
-      svg.append("path")
-         .attr("d", `M 0 ${height-30} Q ${width/2} ${height-40-waterLevel/4} ${width} ${height-30} V ${height} H 0 Z`)
-         .attr("fill", "#e0f2fe")
-         .attr("opacity", 0.6);
-    }
-
+    // Removed blue ground gradients and rectangles to ensure no "line" appears at bottom
+    
     // Recursive Tree Function
     const drawTree = (selection: any, len: number, angle: number, branchWidth: number, depth: number) => {
         if (depth <= 0) {
-            // Foliage
             if (len < 10) {
                 selection.append("circle")
-                    .attr("r", Math.random() * 3 + 2)
+                    .attr("r", Math.random() * 2 + 1)
                     .attr("fill", moodColor)
-                    .attr("opacity", 0.6 + Math.random() * 0.4);
+                    .attr("opacity", 0.4 + Math.random() * 0.3);
             }
             return;
         }
 
-        // Branch Style (Darker if stressed)
         const branchColor = d3.interpolateLab("#57534e", "#292524")(stressFactor);
         
         selection.append("line")
@@ -82,34 +57,32 @@ export const TreeOfLife: React.FC<TreeOfLifeProps> = ({
             .attr("y2", -len)
             .attr("stroke", branchColor)
             .attr("stroke-width", branchWidth)
-            .attr("stroke-linecap", "round");
+            .attr("stroke-linecap", "round")
+            .attr("opacity", 0.8);
 
         const endOfBranch = selection.append("g").attr("transform", `translate(0, ${-len})`);
 
-        // Decay Elements (Skulls/Knots) if high stress
-        if (stressFactor > 0.5 && Math.random() > 0.9 && depth < 3) {
+        if (stressFactor > 0.6 && Math.random() > 0.95 && depth < 3) {
            endOfBranch.append("circle")
-              .attr("r", branchWidth * 1.5)
-              .attr("fill", "#44403c");
+              .attr("r", branchWidth * 1.2)
+              .attr("fill", "#44403c")
+              .attr("opacity", 0.5);
         }
         
-        // Checklist Fruits/Flowers
-        // Logic: if total completed checklist items > specific threshold, draw fruits
-        // We simulate this by random chance based on stats.checklistComplete
-        const fruitChance = Math.min(stats.checklistComplete / 100, 0.4); // Max 40% chance per branch end
+        const fruitChance = Math.min(stats.checklistComplete / 150, 0.3);
         if (depth === 1 && Math.random() < fruitChance) {
              endOfBranch.append("circle")
-                .attr("r", 3 + Math.random() * 2)
-                .attr("fill", "#fb923c") // Orange fruit
-                .attr("opacity", 0.9);
+                .attr("r", 2 + Math.random() * 2)
+                .attr("fill", "#fb923c")
+                .attr("opacity", 0.8);
         }
 
-        const branchCount = Math.random() > 0.35 ? 2 : 3;
+        const branchCount = Math.random() > 0.4 ? 2 : 3;
         
         for (let i = 0; i < branchCount; i++) {
-           const rotate = (Math.random() * 60 - 30) + (i === 0 ? -20 : 20);
-           const shorten = 0.75 + Math.random() * 0.1;
-           const thin = 0.7;
+           const rotate = (Math.random() * 50 - 25) + (i === 0 ? -15 : 15);
+           const shorten = 0.7 + Math.random() * 0.15;
+           const thin = 0.65;
            
            endOfBranch.append("g")
               .attr("transform", `rotate(${rotate})`)
@@ -117,13 +90,11 @@ export const TreeOfLife: React.FC<TreeOfLifeProps> = ({
         }
     };
 
-    const rootGroup = svg.append("g").attr("transform", `translate(${width/2}, ${height - 40})`);
+    const rootGroup = svg.append("g").attr("transform", `translate(${width/2}, ${height - 20})`);
     
-    // Draw Main Tree
-    drawTree(rootGroup, height / 5, 0, growthStage / 1.2, Math.ceil(growthStage / 2));
+    drawTree(rootGroup, height / 6, 0, growthStage / 1.5, Math.ceil(growthStage / 2));
 
-    // Birds (Creative Hours)
-    const birdCount = Math.min(Math.floor(stats.totalCreative / 5), 15);
+    const birdCount = Math.min(Math.floor(stats.totalCreative / 8), 10);
     for(let i=0; i<birdCount; i++) {
         const bx = Math.random() * width;
         const by = Math.random() * (height/2);
@@ -131,15 +102,15 @@ export const TreeOfLife: React.FC<TreeOfLifeProps> = ({
            .attr("x", bx)
            .attr("y", by)
            .text("~")
-           .attr("font-size", 10 + Math.random() * 10)
-           .attr("fill", "#78716c")
-           .attr("opacity", 0.6);
+           .attr("font-size", 8 + Math.random() * 6)
+           .attr("fill", "#a8a29e")
+           .attr("opacity", 0.4);
     }
 
   }, [entryCount, activityLevel, stats]);
 
   return (
-    <div className="absolute inset-0 z-0 pointer-events-none mix-blend-multiply transition-opacity duration-1000">
+    <div className="absolute inset-0 z-0 pointer-events-none mix-blend-multiply opacity-60">
         <svg ref={svgRef} className="w-full h-full" />
     </div>
   );

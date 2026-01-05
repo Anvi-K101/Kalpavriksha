@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Activity, Clock, Trophy, Feather, Camera, Sun, 
-  Disc, BarChart2, X, ListChecks, UserCircle 
+  Disc, X, ListChecks, UserCircle 
 } from 'lucide-react';
 
 const CATEGORIES = [
-  { id: 'checklist', path: '/checklist', icon: ListChecks, label: 'Habits' },
+  { id: 'checklist', path: '/checklist', icon: ListChecks, label: 'Ritual' },
   { id: 'state', path: '/log/state', icon: Activity, label: 'State' },
-  { id: 'effort', path: '/log/effort', icon: Clock, label: 'Effort' },
+  { id: 'effort', path: '/log/effort', icon: Clock, label: 'Energy' },
   { id: 'achievements', path: '/log/achievements', icon: Trophy, label: 'Wins' },
-  { id: 'reflections', path: '/log/reflections', icon: Feather, label: 'Think' },
-  { id: 'memories', path: '/log/memories', icon: Camera, label: 'Memory' },
-  { id: 'future', path: '/log/future', icon: Sun, label: 'Future' },
+  { id: 'reflections', path: '/log/reflections', icon: Feather, label: 'Mind' },
+  { id: 'memories', path: '/log/memories', icon: Camera, label: 'Log' },
+  { id: 'future', path: '/log/future', icon: Sun, label: 'Vision' },
 ];
 
 export const BottomNav = () => {
@@ -21,57 +21,59 @@ export const BottomNav = () => {
 
   useEffect(() => {
     setIsOpen(false);
-  }, [location]);
+  }, [location.pathname]);
 
   return (
     <>
       <div 
-        className={`fixed inset-0 bg-paper/80 backdrop-blur-sm z-40 transition-opacity duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 bg-ink/10 backdrop-blur-[2px] z-[80] transition-all duration-500 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setIsOpen(false)}
       />
 
-      <div className="fixed bottom-8 left-0 right-0 z-50 flex flex-col items-center justify-end pointer-events-none">
+      <div className="fixed bottom-8 right-8 z-[90] flex flex-col items-end pointer-events-none">
         <nav 
           className={`
-            mb-6 bg-ink text-paper rounded-3xl shadow-float p-5
-            flex flex-col gap-6 min-w-[340px] pointer-events-auto
-            origin-bottom transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]
-            ${isOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-75 opacity-0 translate-y-12 pointer-events-none'}
+            mb-4 bg-white/98 backdrop-blur-xl rounded-[2rem] shadow-float p-5
+            flex flex-col gap-4 min-w-[280px] md:min-w-[320px] pointer-events-auto
+            origin-bottom-right transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
+            border border-stone-100/50
+            ${isOpen ? 'scale-100 opacity-100 translate-y-0 translate-x-0' : 'scale-90 opacity-0 translate-y-8 translate-x-4 pointer-events-none'}
           `}
         >
-          <div className="flex justify-around items-center border-b border-white/10 pb-5">
-             <NavLink to="/" className="flex flex-col items-center gap-1 group">
-                <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                  <Disc size={22} />
+          <div className="flex justify-around items-center border-b border-stone-50 pb-4">
+             <NavLink to="/" onClick={(e) => { e.stopPropagation(); }} className="flex flex-col items-center gap-1.5 group active:scale-90 transition-transform outline-none">
+                <div className="w-11 h-11 rounded-2xl bg-stone-50 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-all border border-transparent group-hover:border-stone-100">
+                  <Disc size={20} className="text-stone-300 group-hover:text-ink transition-colors" />
                 </div>
-                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-500">Archive</span>
+                <span className="text-[9px] uppercase font-black tracking-[0.2em] text-stone-400 group-hover:text-ink">Core</span>
              </NavLink>
-             <NavLink to="/analytics" className="flex flex-col items-center gap-1 group">
-                <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                  <BarChart2 size={22} />
+             <NavLink to="/archive" onClick={(e) => { e.stopPropagation(); }} className="flex flex-col items-center gap-1.5 group active:scale-90 transition-transform outline-none">
+                <div className="w-11 h-11 rounded-2xl bg-stone-50 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-all border border-transparent group-hover:border-stone-100">
+                  <Feather size={20} className="text-stone-300 group-hover:text-ink" />
                 </div>
-                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-500">Patterns</span>
+                <span className="text-[9px] uppercase font-black tracking-[0.2em] text-stone-400 group-hover:text-ink">Archive</span>
              </NavLink>
-             <NavLink to="/accounts" className="flex flex-col items-center gap-1 group">
-                <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                  <UserCircle size={22} />
+             <NavLink to="/accounts" onClick={(e) => { e.stopPropagation(); }} className="flex flex-col items-center gap-1.5 group active:scale-90 transition-transform outline-none">
+                <div className="w-11 h-11 rounded-2xl bg-stone-50 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-all border border-transparent group-hover:border-stone-100">
+                  <UserCircle size={20} className="text-stone-300 group-hover:text-ink" />
                 </div>
-                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-500">Identity</span>
+                <span className="text-[9px] uppercase font-black tracking-[0.2em] text-stone-400 group-hover:text-ink">Identity</span>
              </NavLink>
           </div>
 
-          <div className="grid grid-cols-4 gap-y-5 gap-x-2">
-            {CATEGORIES.map(cat => (
+          <div className="grid grid-cols-4 gap-2.5">
+            {CATEGORIES.map((cat) => (
               <NavLink
                 key={cat.id}
                 to={cat.path}
+                onClick={(e) => { e.stopPropagation(); }}
                 className={({ isActive }) => `
-                  flex flex-col items-center gap-2 p-2 rounded-xl transition-all
-                  ${isActive ? 'bg-organic-600/20 text-organic-300' : 'hover:bg-white/5 text-gray-400'}
+                  flex flex-col items-center gap-2 p-2 rounded-xl transition-all duration-300 active:scale-90 outline-none
+                  ${isActive ? 'bg-organic-50 text-organic-700' : 'text-stone-200 hover:text-ink'}
                 `}
               >
-                <cat.icon size={20} strokeWidth={1.5} />
-                <span className="text-[9px] font-bold uppercase tracking-wider">{cat.label}</span>
+                <cat.icon size={16} strokeWidth={2} />
+                <span className="text-[9px] font-black uppercase tracking-wider">{cat.label}</span>
               </NavLink>
             ))}
           </div>
@@ -79,14 +81,14 @@ export const BottomNav = () => {
 
         <button 
           type="button"
-          onClick={(e) => { e.preventDefault(); setIsOpen(!isOpen); }}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsOpen(!isOpen); }}
           className={`
-            pointer-events-auto w-16 h-16 rounded-full shadow-2xl flex items-center justify-center
-            transition-all duration-300 z-50
-            ${isOpen ? 'bg-white text-ink rotate-90 scale-90' : 'bg-ink text-white hover:scale-105 active:scale-95'}
+            pointer-events-auto w-14 h-14 rounded-full shadow-lg flex items-center justify-center
+            transition-all duration-500 z-[100] cursor-pointer outline-none border border-white/20
+            ${isOpen ? 'bg-white text-ink rotate-45 scale-95' : 'bg-ink text-white hover:scale-105 active:scale-75'}
           `}
         >
-          {isOpen ? <X size={28} /> : <div className="w-2.5 h-2.5 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" />} 
+          {isOpen ? <X size={22} /> : <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />} 
         </button>
       </div>
     </>

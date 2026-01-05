@@ -11,7 +11,7 @@ export const ChecklistPage = () => {
   const [date] = useState(getLocalISODate());
   const [entry, setEntry] = useState<DailyEntry>({ ...EMPTY_ENTRY, id: date });
   const [config, setConfig] = useState<ChecklistItemConfig[]>([]);
-  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle' | 'error'>('idle');
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle' | 'local' | 'error'>('idle');
   const [isEditing, setIsEditing] = useState(false);
   const [isCloudChecking, setIsCloudChecking] = useState(true);
   
@@ -23,7 +23,6 @@ export const ChecklistPage = () => {
     let mounted = true;
     setIsCloudChecking(true);
     
-    // Initial local load for instant UI
     const local = StorageService.loadLocal();
     setConfig(local.checklistConfig);
     setEntry(local.entries[date] || { ...EMPTY_ENTRY, id: date });
@@ -73,11 +72,11 @@ export const ChecklistPage = () => {
             await StorageService.saveEntry(updatedEntry, user.uid);
             setSaveStatus('saved');
         } else {
-            setSaveStatus('saved'); // Local-only
+            setSaveStatus('local');
         }
         setTimeout(() => setSaveStatus('idle'), 1500);
-    } catch (e) {
-        setSaveStatus('error');
+    } catch (e: any) {
+        setSaveStatus(e.message === 'PERMISSION_DENIED' ? 'local' : 'error');
         setTimeout(() => setSaveStatus('idle'), 3000);
     }
   };
@@ -90,11 +89,11 @@ export const ChecklistPage = () => {
             await StorageService.saveChecklistConfig(newConfig, user.uid);
             setSaveStatus('saved');
         } else {
-            setSaveStatus('saved'); // Local-only
+            setSaveStatus('local');
         }
         setTimeout(() => setSaveStatus('idle'), 1500);
-      } catch (e) {
-        setSaveStatus('error');
+      } catch (e: any) {
+        setSaveStatus(e.message === 'PERMISSION_DENIED' ? 'local' : 'error');
         setTimeout(() => setSaveStatus('idle'), 3000);
       }
   };
@@ -103,7 +102,7 @@ export const ChecklistPage = () => {
       e.preventDefault();
       const newItem: ChecklistItemConfig = {
           id: Date.now().toString(),
-          label: 'New Habit',
+          label: 'New Ritual',
           enabled: true
       };
       saveConfig([...config, newItem]);
@@ -127,63 +126,75 @@ export const ChecklistPage = () => {
   };
 
   return (
-    <PageContainer>
+    <PageContainer className="max-w-4xl">
       <SaveIndicator status={saveStatus} />
       
-      <div className="flex justify-between items-start mb-8">
-          <SectionHeader title="Habit Rituals" subtitle={new Date(date + 'T00:00:00').toLocaleDateString()} />
+      <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-12">
+          <SectionHeader title="Rituals" subtitle={new Date(date + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })} />
           <button 
              type="button"
              onClick={(e) => { e.preventDefault(); setIsEditing(!isEditing); }}
-             className={`p-3 rounded-full transition-all active:scale-90 ${isEditing ? 'bg-organic-600 text-white shadow-lg' : 'bg-white text-gray-400 hover:text-ink shadow-sm'}`}
+             className={`
+               p-5 rounded-3xl transition-all duration-500 active:scale-90 shadow-soft cursor-pointer flex items-center gap-3
+               ${isEditing ? 'bg-ink text-white rotate-0' : 'bg-white text-stone-400 hover:text-ink hover:shadow-float'}
+             `}
           >
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] px-2">{isEditing ? 'Save Design' : 'Edit Habits'}</span>
               {isEditing ? <Check size={20} /> : <Settings size={20} />}
           </button>
       </div>
 
       {isCloudChecking && (
-          <div className="flex items-center justify-center mb-6 text-organic-300 gap-2">
-              <Loader2 className="animate-spin" size={12} />
-              <span className="font-bold uppercase tracking-widest text-[10px] opacity-60">Checking Vault</span>
+          <div className="flex items-center justify-center mb-10 text-organic-300 gap-3 animate-pulse">
+              <Loader2 className="animate-spin" size={16} />
+              <span className="font-black uppercase tracking-[0.3em] text-[10px] opacity-60">Connecting to Vault</span>
           </div>
       )}
 
       {isEditing && (
-          <div className="animate-in slide-in-from-top-4 mb-8">
-             <Card title="Manage Habits">
-                <div className="space-y-4">
+          <div className="animate-in slide-in-from-top-12 duration-700 mb-12">
+             <Card title="Design Your Discipline">
+                <div className="space-y-6">
                     {config.map(item => (
-                        <div key={item.id} className="flex items-center gap-3">
+                        <div key={item.id} className="flex items-center gap-4 bg-stone-50 p-2 rounded-2xl border border-stone-100/50 group">
                             <input 
                                 value={item.label}
                                 onChange={(e) => updateItemLabel(item.id, e.target.value)}
-                                className="flex-grow p-2 bg-stone-50 border-b border-gray-200 font-serif text-ink focus:outline-none focus:border-organic-500"
+                                className="flex-grow p-4 bg-transparent font-serif text-xl text-ink focus:outline-none placeholder-stone-300"
+                                placeholder="Habit Name"
                             />
-                            <button type="button" onClick={(e) => removeItem(item.id, e)} className="text-red-400 hover:text-red-600 p-2">
-                                <Trash2 size={18} />
+                            <button type="button" onClick={(e) => removeItem(item.id, e)} className="text-red-300 hover:text-red-500 p-4 transition-colors cursor-pointer active:scale-75">
+                                <Trash2 size={20} />
                             </button>
                         </div>
                     ))}
                     <button 
                        type="button"
                        onClick={addItem}
-                       className="w-full py-3 border-2 border-dashed border-gray-200 text-gray-400 rounded-xl hover:border-organic-400 hover:text-organic-600 transition-colors flex items-center justify-center gap-2 font-bold uppercase text-xs tracking-widest"
+                       className="
+                        w-full py-6 border-2 border-dashed border-stone-200 text-stone-400 rounded-3xl 
+                        hover:border-organic-400 hover:text-organic-600 hover:bg-organic-50 transition-all 
+                        flex items-center justify-center gap-3 font-black uppercase text-xs tracking-[0.3em] cursor-pointer
+                       "
                     >
-                        <Plus size={16} /> New Habit
+                        <Plus size={20} /> Add New Ritual
                     </button>
                 </div>
                 
-                <div className="mt-8 pt-6 border-t border-gray-100">
-                    <div className="flex justify-between items-center">
+                <div className="mt-12 pt-8 border-t border-gray-100">
+                    <div className="flex justify-between items-center bg-paper/50 p-6 rounded-3xl border border-stone-100">
                         <div>
-                            <h4 className="font-serif font-bold text-ink">Quiet Reminders</h4>
-                            <p className="text-sm text-gray-400">Enable browser notifications</p>
+                            <h4 className="font-serif font-bold text-ink text-lg tracking-tight">Silent Nudges</h4>
+                            <p className="text-sm text-stone-400 font-sans mt-1">Receive daily habit reminders</p>
                         </div>
                         <button 
                            type="button"
                            onClick={requestNotificationPermission}
                            disabled={notificationsEnabled}
-                           className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest ${notificationsEnabled ? 'bg-organic-50 text-organic-600' : 'bg-ink text-white'}`}
+                           className={`
+                            px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer
+                            ${notificationsEnabled ? 'bg-organic-100 text-organic-700' : 'bg-ink text-paper hover:bg-organic-800'}
+                           `}
                         >
                             {notificationsEnabled ? 'Active' : 'Enable'}
                         </button>
@@ -193,18 +204,21 @@ export const ChecklistPage = () => {
           </div>
       )}
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {config.filter(c => c.enabled).length === 0 && !isEditing && (
-              <div className="text-center py-20 text-gray-400 italic">No ritual configured. Open settings to begin.</div>
+              <div className="col-span-full text-center py-32 text-stone-300 italic font-serif text-xl animate-in fade-in duration-1000">
+                Your ritual list is empty. Open settings to begin your chronicle.
+              </div>
           )}
           
           {config.filter(c => c.enabled).map(item => (
-              <CheckItem 
-                 key={item.id}
-                 label={item.label}
-                 checked={!!entry.checklist[item.id]}
-                 onToggle={() => toggleTask(item.id)}
-              />
+              <div key={item.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <CheckItem 
+                   label={item.label}
+                   checked={!!entry.checklist[item.id]}
+                   onToggle={() => toggleTask(item.id)}
+                />
+              </div>
           ))}
       </div>
     </PageContainer>
