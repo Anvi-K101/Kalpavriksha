@@ -69,7 +69,7 @@ export const Home = () => {
                 e.stopPropagation(); 
                 logout(); 
               }}
-              className="pointer-events-auto bg-white/40 backdrop-blur-xl px-5 py-2 rounded-full flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-stone-500 hover:text-ink transition-all border border-stone-100/30 outline-none"
+              className="pointer-events-auto bg-white/40 backdrop-blur-xl px-5 py-2 rounded-full flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-stone-600 hover:text-ink transition-all border border-stone-100/30 outline-none"
             >
               <LogOut size={12} strokeWidth={3} /> Exit Vault
             </button>
@@ -91,8 +91,8 @@ export const Home = () => {
             <h1 className="font-serif text-6xl md:text-7xl text-ink font-bold tracking-tighter mb-4 leading-tight">
               {stats.count === 0 ? "Void." : "Chronos."}
             </h1>
-            <div className="flex items-center justify-center gap-3 opacity-60 mt-4">
-                <p className="font-serif text-base text-stone-700 italic tracking-wide">
+            <div className="flex items-center justify-center gap-3 opacity-70 mt-4">
+                <p className="font-serif text-base text-stone-800 italic tracking-wide">
                   {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                 </p>
             </div>
@@ -107,7 +107,7 @@ export const Home = () => {
         <div className="flex flex-col items-center gap-8 pt-4">
             <Link 
               to="/growth" 
-              className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.4em] text-ink/60 hover:text-ink transition-colors group outline-none py-2"
+              className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.4em] text-ink/80 hover:text-ink transition-colors group outline-none py-2"
             >
               <Trees size={16} className="group-hover:scale-110 transition-transform" />
               Explore Growth Arbor
@@ -118,8 +118,8 @@ export const Home = () => {
                   to="/checklist" 
                   className="flex items-center gap-4 bg-white/60 backdrop-blur-md px-8 py-3 rounded-full border border-white/50 shadow-soft hover:shadow-float hover:-translate-y-1 active:scale-95 transition-all outline-none"
                 >
-                    <CheckCircle2 size={18} className={todayCompleted === todayTotal ? "text-ink" : "text-stone-400"} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-ink/80">
+                    <CheckCircle2 size={18} className={todayCompleted === todayTotal ? "text-ink" : "text-stone-500"} />
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-ink/90">
                         Ritual: {todayCompleted}/{todayTotal}
                     </span>
                 </Link>

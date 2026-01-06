@@ -30,7 +30,7 @@ export const GrowthPage = () => {
 
   if (!stats) return (
     <div className="min-h-screen flex items-center justify-center bg-paper">
-      <Loader2 className="animate-spin text-stone-400" size={32} />
+      <Loader2 className="animate-spin text-stone-500" size={32} />
     </div>
   );
 
@@ -47,18 +47,18 @@ export const GrowthPage = () => {
         
         <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end">
            <div className="bg-white/80 backdrop-blur-xl p-6 rounded-3xl border border-white shadow-soft">
-              <div className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">Structure Height</div>
+              <div className="text-[10px] font-black uppercase tracking-widest text-stone-600 mb-2">Structure Height</div>
               <div className="font-serif text-3xl font-bold text-ink">{stats.count} Nodes</div>
            </div>
            
            <div className="text-right bg-white/80 backdrop-blur-xl p-6 rounded-3xl border border-white shadow-soft">
-              <div className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2">Vibrancy</div>
+              <div className="text-[10px] font-black uppercase tracking-widest text-stone-600 mb-2">Vibrancy</div>
               <div className="font-serif text-3xl font-bold text-ink">{(stats.avgMood * 10).toFixed(0)}%</div>
            </div>
         </div>
       </div>
       
-      <p className="font-serif text-lg text-stone-700 italic text-center max-w-2xl mx-auto leading-relaxed">
+      <p className="font-serif text-lg text-stone-800 italic text-center max-w-2xl mx-auto leading-relaxed">
         This tree reflects the cumulative weight of your entries. Every ritual completed strengthens the trunk; every creative hour extends a branch; every focused thought adds depth to the leaves.
       </p>
     </PageContainer>

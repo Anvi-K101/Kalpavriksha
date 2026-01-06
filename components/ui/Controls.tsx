@@ -16,7 +16,7 @@ export const SectionHeader: React.FC<{ title: string; subtitle?: string }> = ({ 
       {title}
     </h1>
     {subtitle && (
-      <p className="font-sans text-[10px] font-black text-stone-500 uppercase tracking-[0.4em]">
+      <p className="font-sans text-[10px] font-black text-stone-600 uppercase tracking-[0.4em]">
         {subtitle}
       </p>
     )}
@@ -38,7 +38,7 @@ export const Card: React.FC<{
   >
     {(title || action) && (
       <div className="flex justify-between items-center mb-6">
-        {title && <h4 className="font-serif text-lg md:text-xl font-bold text-ink/60 group-hover:text-ink/80 transition-colors tracking-tight">{title}</h4>}
+        {title && <h4 className="font-serif text-lg md:text-xl font-bold text-ink/75 group-hover:text-ink/90 transition-colors tracking-tight">{title}</h4>}
         {action}
       </div>
     )}
@@ -58,7 +58,7 @@ export const RatingScale: React.FC<{
     <div className="mb-8 last:mb-0">
       {label && (
         <div className="flex justify-between mb-3 items-center">
-          <label className="font-serif text-ink/50 text-[10px] font-bold uppercase tracking-widest">{label}</label>
+          <label className="font-serif text-ink/65 text-[10px] font-bold uppercase tracking-widest">{label}</label>
           <span className="font-mono text-xs font-black text-organic-700 bg-white/80 px-2.5 py-1 rounded-lg border border-stone-100 shadow-sm">
             {value || '—'}
           </span>
@@ -81,7 +81,7 @@ export const RatingScale: React.FC<{
                 h-10 rounded-xl font-mono text-[11px] font-bold transition-all duration-300 border
                 ${isActive 
                   ? 'bg-ink border-ink text-white shadow-sm' 
-                  : 'bg-white/40 border-stone-100 text-stone-500 hover:border-stone-400'
+                  : 'bg-white/40 border-stone-100 text-stone-600 hover:border-stone-400'
                 }
                 ${isCurrent ? 'scale-105 z-10 shadow-lg' : 'scale-100'}
                 active:scale-95 cursor-pointer outline-none
@@ -129,11 +129,11 @@ export const MoodLevelSelector: React.FC<{ value: number | null, onChange: (val:
               flex flex-col items-center justify-center py-4 rounded-2xl border transition-all duration-500 active:scale-95 cursor-pointer outline-none
               ${isSelected 
                 ? `border-ink ${level.color} text-white shadow-lg -translate-y-1` 
-                : 'border-stone-100 bg-white/40 text-stone-500 hover:bg-white/60'
+                : 'border-stone-100 bg-white/40 text-stone-600 hover:bg-white/60'
               }
             `}
           >
-            <span className="text-[7px] uppercase font-bold tracking-widest opacity-60 mb-1">{level.val}</span>
+            <span className="text-[7px] uppercase font-bold tracking-widest opacity-80 mb-1">{level.val}</span>
             <span className="font-serif font-bold text-[10px] uppercase tracking-tight">{level.label}</span>
           </button>
         );
@@ -146,12 +146,12 @@ export const Counter: React.FC<{ value: number; onChange: (val: number) => void;
   <div 
     className="flex items-center justify-between py-4 border-b border-dashed border-stone-100 last:border-0 group"
   >
-    <span className="font-serif text-ink/80 text-base group-hover:text-ink transition-colors duration-300">{label}</span>
+    <span className="font-serif text-ink/90 text-base group-hover:text-ink transition-colors duration-300">{label}</span>
     <div className="flex items-center gap-2 bg-stone-50/50 rounded-full p-1 border border-stone-100">
       <button 
         type="button" 
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(Math.max(0, value - 1)); }} 
-        className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-stone-400 hover:text-ink active:scale-75 transition-all outline-none"
+        className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-stone-500 hover:text-ink active:scale-75 transition-all outline-none"
       >
         <Minus size={14} />
       </button>
@@ -159,7 +159,7 @@ export const Counter: React.FC<{ value: number; onChange: (val: number) => void;
       <button 
         type="button" 
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(value + 1); }} 
-        className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-stone-400 hover:text-ink active:scale-75 transition-all outline-none"
+        className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-stone-500 hover:text-ink active:scale-75 transition-all outline-none"
       >
         <Plus size={14} />
       </button>
@@ -178,18 +178,18 @@ export const Stepper: React.FC<{
     <button 
       type="button" 
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(Math.max(0, value - step)); }} 
-      className="w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-stone-400 hover:text-ink active:scale-75 transition-all outline-none"
+      className="w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-stone-500 hover:text-ink active:scale-75 transition-all outline-none"
     >
       <Minus size={12} />
     </button>
     <div className="flex items-baseline gap-1 min-w-[2.2rem] justify-center">
       <span className="font-mono font-bold text-ink text-sm tabular-nums">{value}</span>
-      {unit && <span className="text-[8px] font-black uppercase text-stone-500">{unit}</span>}
+      {unit && <span className="text-[8px] font-black uppercase text-stone-600">{unit}</span>}
     </div>
     <button 
       type="button" 
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); onChange(max !== undefined ? Math.min(max, value + step) : value + step); }} 
-      className="w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-stone-400 hover:text-ink active:scale-75 transition-all outline-none"
+      className="w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-stone-500 hover:text-ink active:scale-75 transition-all outline-none"
     >
       <Plus size={12} />
     </button>
@@ -222,7 +222,7 @@ export const ChipGroup: React.FC<{
             px-4 py-2 rounded-xl text-[10px] font-bold transition-all duration-300 border
             ${isSelected 
               ? 'bg-ink border-ink text-white shadow-md' 
-              : 'bg-white/50 border-stone-100 text-stone-600 hover:border-stone-400 hover:text-ink'
+              : 'bg-white/50 border-stone-100 text-stone-700 hover:border-stone-500 hover:text-ink'
             }
             outline-none
           `}
@@ -246,9 +246,9 @@ export const TextInput: React.FC<{
   <div className={`mb-8 ${className}`}>
     {label && (
       <div className="flex items-center justify-between mb-2 px-1">
-        <label className="block font-sans text-[9px] font-black text-stone-500 uppercase tracking-[0.3em]">{label}</label>
+        <label className="block font-sans text-[9px] font-black text-stone-600 uppercase tracking-[0.3em]">{label}</label>
         {prompt && !value && (
-          <div className="flex items-center gap-1.5 text-[9px] text-stone-400 italic">
+          <div className="flex items-center gap-1.5 text-[9px] text-stone-500 italic">
             <Sparkles size={10} />
             <span>{prompt}</span>
           </div>
@@ -263,7 +263,7 @@ export const TextInput: React.FC<{
       className="
         w-full bg-transparent border-b border-stone-100 focus:border-ink/20 py-3 px-1
         font-serif text-lg text-ink focus:outline-none transition-all 
-        resize-none rounded-none placeholder-stone-300 selection:bg-stone-100
+        resize-none rounded-none placeholder-stone-400 selection:bg-stone-100
       "
     />
   </div>
@@ -276,7 +276,7 @@ export const MinimalInput: React.FC<{
   className?: string;
   multiline?: boolean;
 }> = ({ value, onChange, placeholder, className, multiline }) => {
-  const common = `w-full bg-transparent border-none focus:ring-0 p-0 placeholder-stone-400 transition-all focus:outline-none text-base ${className}`;
+  const common = `w-full bg-transparent border-none focus:ring-0 p-0 placeholder-stone-500 transition-all focus:outline-none text-base ${className}`;
   return multiline ? (
     <textarea 
       value={value} 
@@ -307,20 +307,20 @@ export const CheckItem: React.FC<{ label: string; checked: boolean; onToggle: ()
     className={`
       w-full flex items-center gap-4 p-5 rounded-[1.5rem] border transition-all duration-500 text-left active:scale-[0.98] cursor-pointer outline-none
       ${checked 
-        ? 'bg-stone-100/50 border-stone-100 opacity-60' 
+        ? 'bg-stone-100 border-stone-200 opacity-60' 
         : 'bg-white border-stone-100 hover:border-stone-200 shadow-soft'
       }
     `}
   >
     <div className={`
       w-7 h-7 rounded-xl border flex items-center justify-center transition-all duration-500
-      ${checked ? 'bg-ink border-ink scale-110 rotate-[360deg]' : 'border-stone-300 bg-white shadow-inner'}
+      ${checked ? 'bg-ink border-ink scale-110 rotate-[360deg]' : 'border-stone-400 bg-white shadow-inner'}
     `}>
       {checked && <Check size={16} strokeWidth={4} className="text-white" />}
     </div>
     <span className={`
       font-serif text-lg md:text-xl font-bold transition-all duration-500
-      ${checked ? 'text-stone-400 line-through' : 'text-ink'}
+      ${checked ? 'text-stone-600 line-through' : 'text-ink'}
     `}>
       {label}
     </span>
@@ -330,16 +330,16 @@ export const CheckItem: React.FC<{ label: string; checked: boolean; onToggle: ()
 export const SaveIndicator: React.FC<{ status: 'saved' | 'saving' | 'idle' | 'local' | 'error' }> = ({ status }) => {
   if (status === 'idle') return null;
   const config = {
-    saving: { label: 'Locking...', icon: <RefreshCw size={10} className="animate-spin" />, color: 'bg-paper/80 text-stone-500 border-stone-100' },
-    saved: { label: 'Secured', icon: <Check size={10} />, color: 'bg-white/90 text-organic-700 border-organic-100' },
-    local: { label: 'Isolated', icon: <HardDrive size={10} />, color: 'bg-white/80 text-stone-500 border-stone-100' },
-    error: { label: 'Retry', icon: <AlertCircle size={10} />, color: 'bg-red-50 text-red-700 border-red-100' }
+    saving: { label: 'Locking...', icon: <RefreshCw size={10} className="animate-spin" />, color: 'bg-paper/80 text-stone-600 border-stone-100' },
+    saved: { label: 'Secured', icon: <Check size={10} />, color: 'bg-white/90 text-organic-800 border-organic-100' },
+    local: { label: 'Isolated', icon: <HardDrive size={10} />, color: 'bg-white/80 text-stone-600 border-stone-100' },
+    error: { label: 'Retry', icon: <AlertCircle size={10} />, color: 'bg-red-50 text-red-800 border-red-100' }
   };
   const current = config[status as keyof typeof config] || config.local;
   return (
     <div className="fixed top-6 right-6 z-[100] pointer-events-none">
       <div className={`px-4 py-2 rounded-full shadow-lg border backdrop-blur-xl flex items-center gap-2.5 ${current.color} animate-in fade-in slide-in-from-top-2 duration-500`}>
-         <div className="opacity-70">{current.icon}</div>
+         <div className="opacity-80">{current.icon}</div>
          <span className="text-[9px] font-black uppercase tracking-[0.2em]">{current.label}</span>
       </div>
     </div>
