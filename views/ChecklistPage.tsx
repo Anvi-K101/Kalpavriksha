@@ -106,7 +106,7 @@ export const ChecklistPage = () => {
           <SectionHeader title="Rituals" subtitle="Daily Disciplines" />
           <button 
              onClick={() => setIsEditing(!isEditing)}
-             className={`p-4 rounded-3xl transition-all shadow-soft flex items-center gap-2 ${isEditing ? 'bg-ink text-white' : 'bg-white text-stone-400 hover:text-ink'}`}
+             className={`p-4 rounded-3xl transition-all shadow-soft flex items-center gap-2 ${isEditing ? 'bg-ink text-white' : 'bg-white text-stone-500 hover:text-ink'}`}
           >
               <span className="text-[10px] font-black uppercase tracking-[0.2em] px-2">{isEditing ? 'Save' : 'Edit'}</span>
               {isEditing ? <Check size={18} /> : <Settings size={18} />}
@@ -125,7 +125,7 @@ export const ChecklistPage = () => {
                           className="flex-grow p-2 bg-transparent font-serif text-lg text-ink focus:outline-none border-b border-stone-100"
                           placeholder="Habit Label"
                       />
-                      <button onClick={() => removeItem(item.id)} className="text-stone-300 hover:text-red-500 p-2 transition-colors">
+                      <button onClick={() => removeItem(item.id)} className="text-stone-400 hover:text-red-600 p-2 transition-colors">
                           <Trash2 size={18} />
                       </button>
                     </div>
@@ -133,7 +133,7 @@ export const ChecklistPage = () => {
                     <div className="flex items-center gap-6 pt-2">
                        <button 
                          onClick={() => updateItem(item.id, { notificationsEnabled: !item.notificationsEnabled })}
-                         className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${item.notificationsEnabled ? 'text-organic-600' : 'text-stone-300'}`}
+                         className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${item.notificationsEnabled ? 'text-organic-700' : 'text-stone-400'}`}
                        >
                          {item.notificationsEnabled ? <Bell size={14} /> : <BellOff size={14} />}
                          {item.notificationsEnabled ? 'Reminders On' : 'Reminders Off'}
@@ -141,7 +141,7 @@ export const ChecklistPage = () => {
                        
                        {item.notificationsEnabled && (
                          <div className="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-100">
-                           <Clock size={12} className="text-stone-400" />
+                           <Clock size={12} className="text-stone-500" />
                            <input 
                               type="time"
                               value={item.notifyTime}
@@ -156,7 +156,7 @@ export const ChecklistPage = () => {
             ))}
             <button 
                onClick={addItem}
-               className="w-full py-6 border-2 border-dashed border-stone-200 text-stone-300 rounded-3xl hover:border-ink hover:text-ink transition-all flex items-center justify-center gap-3 font-black uppercase text-[10px] tracking-[0.3em]"
+               className="w-full py-6 border-2 border-dashed border-stone-200 text-stone-400 rounded-3xl hover:border-ink hover:text-ink transition-all flex items-center justify-center gap-3 font-black uppercase text-[10px] tracking-[0.3em]"
             >
                 <Plus size={18} /> New Ritual
             </button>
@@ -172,7 +172,7 @@ export const ChecklistPage = () => {
                  onToggle={() => toggleTask(item.id)}
               />
               {item.notificationsEnabled && (
-                <div className="mt-2 px-6 flex items-center gap-2 text-stone-300 opacity-60">
+                <div className="mt-2 px-6 flex items-center gap-2 text-stone-500">
                   <Bell size={10} />
                   <span className="text-[8px] font-black uppercase tracking-widest">Reminding at {item.notifyTime}</span>
                 </div>

@@ -38,12 +38,12 @@ export const Onboarding = () => {
           <TreePine size={40} />
         </div>
         <h1 className="font-serif text-5xl md:text-7xl text-ink font-bold tracking-tighter mb-4">Chronos</h1>
-        <p className="font-serif text-xl text-stone-400 italic max-w-md mb-8">
+        <p className="font-serif text-xl text-stone-600 italic max-w-md mb-8">
           "A silent archive for your life's expansion."
         </p>
 
         <div className="max-w-sm mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
-           <p className="font-sans text-[11px] leading-relaxed text-stone-500 uppercase tracking-[0.1em] font-medium text-balance">
+           <p className="font-sans text-[11px] leading-relaxed text-stone-700 uppercase tracking-[0.1em] font-medium text-balance">
              Chronos is a personal operating system designed to map your progress throughout the year. 
              By recording daily nodes, you gradually build a visual and data-driven history of your 
              mental state, achievements, and evolution.
@@ -62,12 +62,12 @@ export const Onboarding = () => {
           <button 
             type="button"
             onClick={() => setView('about')}
-            className="w-full py-4 bg-white border border-stone-100 text-stone-400 rounded-full font-sans font-black uppercase tracking-[0.3em] text-[9px] hover:text-ink transition-all flex items-center justify-center gap-2"
+            className="w-full py-4 bg-white border border-stone-200 text-stone-600 rounded-full font-sans font-black uppercase tracking-[0.3em] text-[9px] hover:text-ink transition-all flex items-center justify-center gap-2"
           >
             <Info size={12} /> The Concept
           </button>
 
-          <div className="flex items-center justify-center gap-2 text-stone-300 pt-4">
+          <div className="flex items-center justify-center gap-2 text-stone-500 pt-4">
             <ShieldCheck size={14} />
             <span className="text-[10px] uppercase font-bold tracking-[0.2em]">End-to-End Privacy</span>
           </div>
@@ -84,13 +84,13 @@ export const Onboarding = () => {
           <div className="space-y-6 text-left">
             <div className="p-6 bg-white rounded-3xl border border-stone-100 shadow-soft">
               <h4 className="font-serif text-lg font-bold text-ink mb-2">Daily Persistence</h4>
-              <p className="font-serif text-sm text-stone-500 leading-relaxed italic">
+              <p className="font-serif text-sm text-stone-700 leading-relaxed italic">
                 Chronos invites you to spend five minutes each day reflecting on your biological and mental state. These nodes aggregate into a deep history of your growth.
               </p>
             </div>
             <div className="p-6 bg-white rounded-3xl border border-stone-100 shadow-soft">
               <h4 className="font-serif text-lg font-bold text-ink mb-2">Long-Term Vision</h4>
-              <p className="font-serif text-sm text-stone-500 leading-relaxed italic">
+              <p className="font-serif text-sm text-stone-700 leading-relaxed italic">
                 Observe patterns that only become visible over months. The "Arbor" visualizes your consistency, showing you exactly where you've invested your energy.
               </p>
             </div>
@@ -98,7 +98,7 @@ export const Onboarding = () => {
           <button 
             type="button"
             onClick={() => setView('welcome')}
-            className="mt-12 text-[10px] font-black uppercase tracking-[0.4em] text-stone-300 hover:text-ink transition-colors"
+            className="mt-12 text-[10px] font-black uppercase tracking-[0.4em] text-stone-500 hover:text-ink transition-colors"
           >
             Back to Entry
           </button>
@@ -135,17 +135,17 @@ export const Onboarding = () => {
 
     return (
       <div className="fixed inset-0 z-[110] bg-paper flex flex-col items-center justify-center p-10 animate-in fade-in duration-500">
-         <div className="w-20 h-20 bg-stone-50 rounded-[2rem] flex items-center justify-center mb-10 border border-stone-100">
+         <div className="w-20 h-20 bg-stone-100 rounded-[2rem] flex items-center justify-center mb-10 border border-stone-200">
             {current.icon}
          </div>
          <h2 className="font-serif text-4xl font-bold text-ink mb-4">{current.title}</h2>
-         <p className="font-serif text-lg text-stone-400 text-center max-w-sm leading-relaxed mb-12 italic">
+         <p className="font-serif text-lg text-stone-700 text-center max-w-sm leading-relaxed mb-12 italic">
            "{current.text}"
          </p>
          
          <div className="flex gap-2 mb-12">
             {steps.map((_, i) => (
-              <div key={i} className={`h-1.5 rounded-full transition-all duration-500 ${i === tutorialStep ? 'w-8 bg-ink' : 'w-2 bg-stone-100'}`} />
+              <div key={i} className={`h-1.5 rounded-full transition-all duration-500 ${i === tutorialStep ? 'w-8 bg-ink' : 'w-2 bg-stone-200'}`} />
             ))}
          </div>
 
@@ -170,12 +170,12 @@ export const Onboarding = () => {
     <div className="fixed inset-0 z-[100] bg-paper flex flex-col items-center justify-center p-8 animate-in slide-in-from-bottom-8 duration-500">
       <div className="w-full max-w-sm">
         <h2 className="font-serif text-4xl font-bold text-ink mb-2">Identity</h2>
-        <p className="text-stone-300 font-sans text-xs mb-10 uppercase tracking-[0.3em]">Confirm Vault Access</p>
+        <p className="text-stone-500 font-sans text-xs mb-10 uppercase tracking-[0.3em]">Confirm Vault Access</p>
 
         <button 
           type="button"
           onClick={() => signInGoogle()}
-          className="w-full py-4 bg-white border border-stone-100 text-ink rounded-[1.5rem] font-sans font-black uppercase tracking-[0.2em] text-[10px] hover:bg-stone-50 transition-all flex items-center justify-center gap-3 mb-8 shadow-soft outline-none"
+          className="w-full py-4 bg-white border border-stone-200 text-ink rounded-[1.5rem] font-sans font-black uppercase tracking-[0.2em] text-[10px] hover:bg-stone-50 transition-all flex items-center justify-center gap-3 mb-8 shadow-soft outline-none"
         >
           <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="Google" />
           Authenticate with Google
@@ -184,12 +184,12 @@ export const Onboarding = () => {
         <form onSubmit={handleAuth} className="space-y-4">
           <input 
             type="email" placeholder="Email" 
-            className="w-full p-4 bg-stone-50/50 border border-stone-100 rounded-[1.5rem] font-serif text-ink focus:outline-none focus:bg-white transition-all"
+            className="w-full p-4 bg-stone-50/50 border border-stone-200 rounded-[1.5rem] font-serif text-ink focus:outline-none focus:bg-white transition-all"
             value={email} onChange={e => setEmail(e.target.value)} required
           />
           <input 
             type="password" placeholder="Password" 
-            className="w-full p-4 bg-stone-50/50 border border-stone-100 rounded-[1.5rem] font-serif text-ink focus:outline-none focus:bg-white transition-all"
+            className="w-full p-4 bg-stone-50/50 border border-stone-200 rounded-[1.5rem] font-serif text-ink focus:outline-none focus:bg-white transition-all"
             value={password} onChange={e => setPassword(e.target.value)} required
           />
           
@@ -211,7 +211,7 @@ export const Onboarding = () => {
           <button 
             type="button"
             onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}
-            className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-300 hover:text-ink transition-colors outline-none"
+            className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500 hover:text-ink transition-colors outline-none"
           >
             {authMode === 'signup' ? 'Already Have A Vault?' : 'Need A New Private Vault?'}
           </button>
@@ -219,7 +219,7 @@ export const Onboarding = () => {
           <button 
             type="button"
             onClick={() => setView('welcome')}
-            className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-200 hover:text-stone-400 transition-colors outline-none"
+            className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 hover:text-stone-600 transition-colors outline-none"
           >
             Cancel
           </button>

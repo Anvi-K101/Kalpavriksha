@@ -60,14 +60,14 @@ export const WisdomPanel: React.FC<WisdomPanelProps> = ({ stats }) => {
       className="mt-8 bg-white/40 backdrop-blur-md border border-organic-100/50 p-6 rounded-3xl shadow-soft max-w-sm mx-auto animate-in fade-in slide-in-from-top-4 duration-700"
     >
       <div className="flex justify-center mb-3">
-        <div className="p-2 bg-organic-50 rounded-full text-organic-400">
+        <div className="p-2 bg-organic-100 rounded-full text-organic-700">
           <Quote size={14} />
         </div>
       </div>
       {loading ? (
         <div className="flex flex-col items-center gap-2">
-          <div className="w-1 h-1 bg-organic-300 rounded-full animate-ping" />
-          <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-organic-300">Consulting Archive</span>
+          <div className="w-1 h-1 bg-organic-500 rounded-full animate-ping" />
+          <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-organic-500">Consulting Archive</span>
         </div>
       ) : (
         <p className="font-serif text-sm text-ink italic leading-relaxed text-center text-balance">
@@ -78,7 +78,7 @@ export const WisdomPanel: React.FC<WisdomPanelProps> = ({ stats }) => {
         <button 
           type="button"
           onClick={generateInsight}
-          className="text-[9px] font-bold uppercase tracking-[0.2em] text-organic-400 hover:text-organic-600 transition-colors flex items-center gap-1 outline-none"
+          className="text-[9px] font-bold uppercase tracking-[0.2em] text-organic-600 hover:text-organic-800 transition-colors flex items-center gap-1 outline-none"
         >
           <Sparkles size={10} /> Refresh Insight
         </button>

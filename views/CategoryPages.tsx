@@ -36,12 +36,12 @@ const DateNavigator = ({ date, setDate }: { date: string, setDate: (d: string) =
        <button 
          type="button" 
          onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeDate(-1); }} 
-         className="p-3 hover:bg-stone-50 rounded-xl text-stone-300 hover:text-ink active:scale-75 transition-all cursor-pointer outline-none"
+         className="p-3 hover:bg-stone-50 rounded-xl text-stone-500 hover:text-ink active:scale-75 transition-all cursor-pointer outline-none"
         >
           <ChevronLeft size={20} />
         </button>
        <div className="flex items-center gap-3">
-          <Calendar size={16} className="text-organic-600 opacity-30" />
+          <Calendar size={16} className="text-organic-600 opacity-60" />
           <span className="font-serif font-black text-ink text-base md:text-lg tracking-tight">
              {(() => {
                 const [y, m, d] = date.split('-').map(Number);
@@ -52,7 +52,7 @@ const DateNavigator = ({ date, setDate }: { date: string, setDate: (d: string) =
        <button 
          type="button" 
          onClick={(e) => { e.preventDefault(); e.stopPropagation(); changeDate(1); }} 
-         className="p-3 hover:bg-stone-50 rounded-xl text-stone-300 hover:text-ink active:scale-75 transition-all cursor-pointer outline-none"
+         className="p-3 hover:bg-stone-50 rounded-xl text-stone-500 hover:text-ink active:scale-75 transition-all cursor-pointer outline-none"
         >
           <ChevronRight size={20} />
         </button>
@@ -142,9 +142,9 @@ const PageWrapper = ({ Component, title, subtitle }: { Component: any, title: st
         <SectionHeader title={title} subtitle={subtitle} />
         
         {isCloudLoading && (
-          <div className="flex items-center justify-center gap-3 mb-8 text-organic-300 animate-pulse">
-            <Loader2 size={18} className="animate-spin opacity-40" />
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40">Opening Archive...</span>
+          <div className="flex items-center justify-center gap-3 mb-8 text-organic-500 animate-pulse">
+            <Loader2 size={18} className="animate-spin opacity-60" />
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60">Opening Archive...</span>
           </div>
         )}
 
@@ -183,7 +183,7 @@ const StateContent = ({ entry, save }: { entry: DailyEntry, save: any }) => (
                     px-5 py-2.5 rounded-2xl text-[11px] font-bold transition-all duration-300 active:scale-90 cursor-pointer border-2
                     ${isActive 
                         ? 'bg-organic-600 border-organic-600 text-white shadow-md -translate-y-1' 
-                        : 'bg-white border-stone-100 text-stone-400 hover:border-organic-300 hover:text-organic-600 hover:-translate-y-0.5'}
+                        : 'bg-white border-stone-100 text-stone-500 hover:border-organic-400 hover:text-organic-700 hover:-translate-y-0.5'}
                   `}
                 >
                   {emo}
@@ -241,14 +241,14 @@ const ReflectionsContent = ({ entry, save }: { entry: DailyEntry, save: any }) =
     <div className="animate-in fade-in duration-700" onClick={(e) => e.stopPropagation()}>
       <Card className="min-h-[60vh] flex flex-col border-none shadow-soft/50">
         <textarea 
-          className="w-full flex-grow bg-transparent border-none p-0 text-xl md:text-2xl font-serif text-ink leading-[1.8] focus:ring-0 resize-none placeholder-stone-200 selection:bg-organic-100" 
+          className="w-full flex-grow bg-transparent border-none p-0 text-xl md:text-2xl font-serif text-ink leading-[1.8] focus:ring-0 resize-none placeholder-stone-300 selection:bg-organic-100" 
           value={entry.reflections.longForm} 
           onChange={(e) => save((p: DailyEntry) => ({...p, reflections: {...p.reflections, longForm: e.target.value}}))} 
           placeholder="Unfold the day's inner dialogue..." 
           onClick={(e) => e.stopPropagation()}
         />
         <div className="pt-8 border-t border-stone-50 mt-8 flex justify-end items-center gap-3">
-            <span className="font-mono text-[9px] text-stone-300 font-black uppercase tracking-[0.4em]">Vault Protection Active</span>
+            <span className="font-mono text-[9px] text-stone-500 font-black uppercase tracking-[0.4em]">Vault Protection Active</span>
         </div>
       </Card>
     </div>

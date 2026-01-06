@@ -55,7 +55,7 @@ export const Accounts = () => {
       <SectionHeader title="Identity" subtitle="Vault Ownership" />
 
       <Card className="flex items-center gap-6 py-6 mb-8">
-        <div className="w-16 h-16 rounded-[2rem] bg-stone-100 flex items-center justify-center text-stone-400 shadow-inner overflow-hidden border border-white">
+        <div className="w-16 h-16 rounded-[2rem] bg-stone-100 flex items-center justify-center text-stone-500 shadow-inner overflow-hidden border border-white">
           {user.photoURL ? (
             <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
           ) : (
@@ -64,8 +64,8 @@ export const Accounts = () => {
         </div>
         <div className="flex-grow">
           <h2 className="font-serif text-2xl font-bold text-ink leading-tight tracking-tight">{user.displayName || 'Vault Owner'}</h2>
-          <p className="text-stone-400 text-[10px] font-sans uppercase tracking-[0.3em] flex items-center gap-2.5 mt-2">
-            <ShieldCheck size={12} className="text-organic-600" />
+          <p className="text-stone-600 text-[10px] font-sans uppercase tracking-[0.3em] flex items-center gap-2.5 mt-2">
+            <ShieldCheck size={12} className="text-organic-700" />
             Verified Instance
           </p>
         </div>
@@ -74,7 +74,7 @@ export const Accounts = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
         <Card title="System Transfer">
            <div className="space-y-5">
-              <p className="text-[11px] text-stone-400 leading-relaxed font-serif italic">
+              <p className="text-[11px] text-stone-600 leading-relaxed font-serif italic">
                 Export an entire daily chronicle into your mobile system (Apple Journal).
               </p>
               <div className="flex gap-3">
@@ -82,7 +82,7 @@ export const Accounts = () => {
                     type="date" 
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="flex-grow bg-white/40 border border-stone-100 rounded-2xl px-4 py-2.5 text-xs font-mono text-ink focus:outline-none focus:bg-white transition-all"
+                    className="flex-grow bg-white/40 border border-stone-200 rounded-2xl px-4 py-2.5 text-xs font-mono text-ink focus:outline-none focus:bg-white transition-all"
                  />
                  <button 
                     type="button" 
@@ -98,12 +98,12 @@ export const Accounts = () => {
         <Card title="Archive Info">
            <div className="space-y-4 py-2">
               <div className="flex justify-between items-center text-xs font-serif">
-                <span className="text-stone-400">Total Nodes</span>
-                <span className="font-bold text-ink bg-stone-50 px-3 py-1 rounded-lg">{stats.totalEntries}</span>
+                <span className="text-stone-600">Total Nodes</span>
+                <span className="font-bold text-ink bg-stone-100 px-3 py-1 rounded-lg">{stats.totalEntries}</span>
               </div>
               <Link 
                 to="/about"
-                className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-organic-600 hover:text-organic-800 transition-colors pt-4 border-t border-stone-100/50"
+                className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-organic-700 hover:text-organic-900 transition-colors pt-4 border-t border-stone-100/50"
               >
                 <span>The Concept</span>
                 <Info size={14} />
@@ -116,7 +116,7 @@ export const Accounts = () => {
         <button 
           type="button"
           onClick={(e) => { e.preventDefault(); StorageService.exportData(); }}
-          className="py-4 bg-white/40 backdrop-blur-md border border-stone-100 text-stone-500 rounded-[1.5rem] font-sans font-bold uppercase tracking-widest text-[10px] hover:bg-white hover:text-ink transition-all flex items-center justify-center gap-3 outline-none"
+          className="py-4 bg-white/40 backdrop-blur-md border border-stone-200 text-stone-600 rounded-[1.5rem] font-sans font-bold uppercase tracking-widest text-[10px] hover:bg-white hover:text-ink transition-all flex items-center justify-center gap-3 outline-none"
         >
           <Download size={16} /> JSON Backup
         </button>
@@ -124,7 +124,7 @@ export const Accounts = () => {
         <button 
           type="button"
           onClick={(e) => { e.preventDefault(); logout(); }}
-          className="py-4 bg-stone-100 text-stone-400 rounded-[1.5rem] font-sans font-bold uppercase tracking-widest text-[10px] hover:bg-stone-200 hover:text-ink transition-all flex items-center justify-center gap-3 outline-none"
+          className="py-4 bg-stone-100 text-stone-500 rounded-[1.5rem] font-sans font-bold uppercase tracking-widest text-[10px] hover:bg-stone-200 hover:text-ink transition-all flex items-center justify-center gap-3 outline-none"
         >
           <LogOut size={16} /> Close Vault
         </button>
@@ -132,10 +132,10 @@ export const Accounts = () => {
 
       <div className="text-center space-y-4 pb-20">
          <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-white/30 backdrop-blur-xl rounded-full border border-stone-100/50 shadow-soft">
-            <AlertCircle size={14} className="text-stone-300" />
-            <span className="text-[10px] uppercase font-bold tracking-[0.4em] text-stone-400">Chronos System 1.0.6 — AES Isolated</span>
+            <AlertCircle size={14} className="text-stone-500" />
+            <span className="text-[10px] uppercase font-bold tracking-[0.4em] text-stone-600">Chronos System 1.0.6 — AES Isolated</span>
          </div>
-         <p className="text-[11px] font-black uppercase tracking-[0.5em] text-stone-300/60 animate-in fade-in duration-1000 delay-500">
+         <p className="text-[11px] font-black uppercase tracking-[0.5em] text-stone-500/80 animate-in fade-in duration-1000 delay-500">
            Made by Anvi Karanjkar
          </p>
       </div>
